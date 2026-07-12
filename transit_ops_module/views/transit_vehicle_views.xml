@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- ================================================================
+             LIST VIEW
+        ================================================================= -->
+        <record id="view_transit_vehicle_list" model="ir.ui.view">
+            <field name="name">transit.vehicle.list</field>
+            <field name="model">transit.vehicle</field>
+            <field name="arch" type="xml">
+                <list string="Vehicles"
+                      decoration-danger="status == 'expired_docs'"
+                      decoration-info="status == 'on_trip'"
+                      decoration-muted="status == 'inactive'">
+                    <field name="vehicle_number"/>
+                    <field name="vehicle_type"/>
+                    <field name="brand"/>
+                    <field name="vehicle_model"/>
+                    <field name="fuel_type"/>
+                    <field name="capacity"/>
+                    <field name="current_km" sum="Total KM"/>
+                    <field name="assigned_driver_id"/>
+                    <field name="insurance_expiry"/>
+                    <field name="fitness_expiry"/>
+                    <field name="status" widget="badge"
+                           decoration-success="status == 'available'"
+                           decoration-info="status == 'on_trip'"
+                           decoration-danger="status == 'expired_docs'"
+                           decoration-muted="status == 'inactive'"/>
+                </list>
+            </field>
+        </record>
+
+        <!-- ================================================================
+             FORM VIEW
+        ================================================================= -->
+        <record id="view_transit_vehicle_form" model="ir.ui.view">
+            <field name="name">transit.vehicle.form</field>
+            <field name="model">transit.vehicle</field>
+            <field name="arch" type="xml">
+                <form string="Vehicle">
+                    <header>
+                        <button name="action_archive_vehicle" type="object"
+                                string="Archive Vehicle" class="btn-secondary"
+                                confirm="Are you sure you want to take this vehicle out of service?"
+                                invisible="not active"/>
+                        <field name="status" widget="statusbar"
+                               statusbar_visible="available,on_trip,expired_docs,inactive"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_button_box" name="button_box">
+                            <button name="action_view_trips" type="object"
+                                    class="oe_stat_button" icon="fa-road">
+                                <field name="trip_count" widget="statinfo" string="Trips"/>
+                            </button>
+                        </div>
+
+                        <field name="image_1920" widget="image" class="oe_avatar"
+                               options="{'preview_image': 'image_128'}"/>
+
+                        <div class="oe_title">
+                            <label for="vehicle_number"/>
+                            <h1>
+                                <field name="vehicle_number" placeholder="e.g. KA-01-AB-1234"/>
+                            </h1>
+                        </div>
+
+                        <group>
+                            <group string="Vehicle Details">
+                                <field name="vehicle_type"/>
+                                <field name="brand"/>
+                                <field name="vehicle_model"/>
+                                <field name="manufacturing_year"/>
+                                <field name="capacity"/>
+                                <field name="fuel_type"/>
+                                <field name="current_km"/>
+                            </group>
+                            <group string="Documents">
+                                <field name="registration_date"/>
+                                <field name="insurance_expiry"/>
+                                <field name="fitness_expiry"/>
+                            </group>
+                        </group>
+
+                        <group>
+                            <group string="Assignment">
+                                <field name="assigned_driver_id"/>
+                                <field name="assigned_trip_id"/>
+                            </group>
+                            <group string="Organization">
+                                <field name="company_id" groups="base.group_multi_company"/>
+                                <field name="active" invisible="1"/>
+                            </group>
+                        </group>
+
+                        <notebook>
+                            <page string="Notes" name="notes">
+                                <field name="notes" placeholder="Internal notes about this vehicle..."/>
+                            </page>
+                        </notebook>
+                    </sheet>
+                    <chatter/>
+                </form>
+            </field>
+        </record>
+
+        <!-- ================================================================
+             SEARCH VIEW
+        ================================================================= -->
+        <record id="view_transit_vehicle_search" model="ir.ui.view">
+            <field name="name">transit.vehicle.search</field>
+            <field name="model">transit.vehicle</field>
+            <field name="arch" type="xml">
+                <search string="Search Vehicles">
+                    <field name="vehicle_number" string="Vehicle"
+                           filter_domain="['|', '|', ('vehicle_number', 'ilike', self),
+                                          ('brand', 'ilike', self), ('vehicle_model', 'ilike', self)]"/>
+                    <field name="brand"/>
+                    <field name="vehicle_model"/>
+                    <field name="assigned_driver_id"/>
+                    <separator/>
+                    <filter string="Available" name="filter_available"
+                            domain="[('status', '=', 'available')]"/>
+                    <filter string="On Trip" name="filter_on_trip"
+                            domain="[('status', '=', 'on_trip')]"/>
+                    <filter string="Documents Expired" name="filter_expired_docs"
+                            domain="[('status', '=', 'expired_docs')]"/>
+                    <filter string="Inactive" name="filter_inactive"
+                            domain="[('status', '=', 'inactive')]"/>
+                    <separator/>
+                    <filter string="Archived" name="filter_archived"
+                            domain="[('active', '=', False)]"/>
+                    <separator/>
+                    <filter string="Insurance Expiring (30 days)" name="filter_insurance_soon"
+                            domain="[('insurance_expiry', '&lt;=', (context_today() + relativedelta(days=30)).strftime('%Y-%m-%d'))]"/>
+                    <filter string="Fitness Expiring (30 days)" name="filter_fitness_soon"
+                            domain="[('fitness_expiry', '&lt;=', (context_today() + relativedelta(days=30)).strftime('%Y-%m-%d'))]"/>
+                    <group expand="0" string="Group By">
+                        <filter string="Status" name="group_status" context="{'group_by': 'status'}"/>
+                        <filter string="Vehicle Type" name="group_type" context="{'group_by': 'vehicle_type'}"/>
+                        <filter string="Fuel Type" name="group_fuel" context="{'group_by': 'fuel_type'}"/>
+                        <filter string="Assigned Driver" name="group_driver" context="{'group_by': 'assigned_driver_id'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <!-- ================================================================
+             WINDOW ACTION
+        ================================================================= -->
+        <record id="action_transit_vehicle" model="ir.actions.act_window">
+            <field name="name">Vehicles</field>
+            <field name="res_model">transit.vehicle</field>
+            <field name="view_mode">list,form</field>
+            <field name="search_view_id" ref="view_transit_vehicle_search"/>
+            <field name="context">{'search_default_filter_available': 0}</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smart_action">
+                    Register your first vehicle
+                </p>
+                <p>
+                    Track registration, insurance &amp; fitness documents, current
+                    odometer reading, driver assignment and live status for every
+                    vehicle in your fleet.
+                </p>
+            </field>
+        </record>
+
+        <!-- ================================================================
+             MENU (child of the "Vehicle Registry" parent menu created in
+             the base scaffold — that file is not modified here)
+        ================================================================= -->
+        <menuitem id="menu_transit_vehicle_list"
+                  name="Vehicles"
+                  parent="transit_ops.menu_transit_vehicle_root"
+                  action="action_transit_vehicle"
+                  groups="transit_ops.group_transit_dispatcher"
+                  sequence="10"/>
+
+    </data>
+</odoo>

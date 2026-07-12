@@ -1,0 +1,13 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_transit_vehicle_manager,transit.vehicle.manager,model_transit_vehicle,group_transit_manager,1,1,1,1
+access_transit_vehicle_dispatcher,transit.vehicle.dispatcher,model_transit_vehicle,group_transit_dispatcher,1,1,1,0
+access_transit_vehicle_mechanic,transit.vehicle.mechanic,model_transit_vehicle,group_transit_mechanic,1,0,0,0
+access_transit_vehicle_driver,transit.vehicle.driver,model_transit_vehicle,group_transit_driver,1,0,0,0
+access_transit_driver_manager,transit.driver.manager,model_transit_driver,group_transit_manager,1,1,1,1
+access_transit_driver_dispatcher,transit.driver.dispatcher,model_transit_driver,group_transit_dispatcher,1,1,1,0
+access_transit_driver_mechanic,transit.driver.mechanic,model_transit_driver,group_transit_mechanic,1,0,0,0
+access_transit_driver_driver,transit.driver.driver,model_transit_driver,group_transit_driver,1,0,0,0
+access_transit_trip_manager,transit.trip.manager,model_transit_trip,group_transit_manager,1,1,1,1
+access_transit_trip_dispatcher,transit.trip.dispatcher,model_transit_trip,group_transit_dispatcher,1,1,1,0
+access_transit_trip_mechanic,transit.trip.mechanic,model_transit_trip,group_transit_mechanic,1,0,0,0
+access_transit_trip_driver,transit.trip.driver,model_transit_trip,group_transit_driver,1,0,0,0
