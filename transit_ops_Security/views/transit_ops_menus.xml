@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Root Application Menu - visible to any of the 4 roles -->
+    <menuitem id="menu_transit_ops_root"
+              name="TransitOps"
+              sequence="5"
+              groups="group_transit_fleet_manager,group_transit_driver,group_transit_safety_officer,group_transit_financial_analyst"/>
+
+    <!-- ======================================================================
+         FLEET  (Vehicles) - all roles have at least read access
+    ======================================================================= -->
+    <menuitem id="menu_transit_fleet"
+              name="Fleet"
+              parent="menu_transit_ops_root"
+              sequence="10"
+              groups="group_transit_fleet_manager,group_transit_driver,group_transit_safety_officer,group_transit_financial_analyst"/>
+
+    <menuitem id="menu_transit_vehicle"
+              name="Vehicles"
+              parent="menu_transit_fleet"
+              action="action_transit_vehicle"
+              sequence="10"/>
+
+    <!-- ======================================================================
+         DISPATCH  (Trips) - all roles have at least read access
+    ======================================================================= -->
+    <menuitem id="menu_transit_dispatch"
+              name="Dispatch"
+              parent="menu_transit_ops_root"
+              sequence="20"
+              groups="group_transit_fleet_manager,group_transit_driver,group_transit_safety_officer,group_transit_financial_analyst"/>
+
+    <menuitem id="menu_transit_trip"
+              name="Trips"
+              parent="menu_transit_dispatch"
+              action="action_transit_trip"
+              sequence="10"/>
+
+    <!-- ======================================================================
+         DRIVERS - all roles have at least read access (drivers see only self)
+    ======================================================================= -->
+    <menuitem id="menu_transit_drivers_root"
+              name="Drivers"
+              parent="menu_transit_ops_root"
+              sequence="30"
+              groups="group_transit_fleet_manager,group_transit_driver,group_transit_safety_officer,group_transit_financial_analyst"/>
+
+    <menuitem id="menu_transit_driver"
+              name="All Drivers"
+              parent="menu_transit_drivers_root"
+              action="action_transit_driver"
+              sequence="10"/>
+
+    <!-- ======================================================================
+         MAINTENANCE - Fleet Manager, Safety Officer, Financial Analyst only
+         (Driver role has no access to this model at all)
+    ======================================================================= -->
+    <menuitem id="menu_transit_maintenance_root"
+              name="Maintenance"
+              parent="menu_transit_ops_root"
+              sequence="40"
+              groups="group_transit_fleet_manager,group_transit_safety_officer,group_transit_financial_analyst"/>
+
+    <menuitem id="menu_transit_maintenance"
+              name="Maintenance Records"
+              parent="menu_transit_maintenance_root"
+              action="action_transit_maintenance"
+              sequence="10"/>
+
+    <!-- ======================================================================
+         FINANCE  (Fuel & Expense) - Fleet Manager, Driver, Financial Analyst
+         (Safety Officer has no access - separation of duties)
+    ======================================================================= -->
+    <menuitem id="menu_transit_finance_root"
+              name="Finance"
+              parent="menu_transit_ops_root"
+              sequence="50"
+              groups="group_transit_fleet_manager,group_transit_driver,group_transit_financial_analyst"/>
+
+    <menuitem id="menu_transit_fuel_expense"
+              name="Fuel &amp; Expense"
+              parent="menu_transit_finance_root"
+              action="action_transit_fuel_expense"
+              sequence="10"/>
+
+    <!-- ======================================================================
+         NOTIFICATIONS - all roles (each sees a role-filtered subset)
+    ======================================================================= -->
+    <menuitem id="menu_transit_notifications_root"
+              name="Notifications"
+              parent="menu_transit_ops_root"
+              sequence="60"
+              groups="group_transit_fleet_manager,group_transit_driver,group_transit_safety_officer,group_transit_financial_analyst"/>
+
+    <menuitem id="menu_transit_notification"
+              name="All Notifications"
+              parent="menu_transit_notifications_root"
+              action="action_transit_notification"
+              sequence="10"/>
+
+</odoo>

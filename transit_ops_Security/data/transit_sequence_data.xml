@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <record id="seq_transit_driver" model="ir.sequence">
+            <field name="name">Transit Driver Code</field>
+            <field name="code">transit.driver</field>
+            <field name="prefix">DRV/</field>
+            <field name="padding">4</field>
+            <field name="number_next">1</field>
+            <field name="number_increment">1</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+        <record id="seq_transit_trip" model="ir.sequence">
+            <field name="name">Transit Trip Reference</field>
+            <field name="code">transit.trip</field>
+            <field name="prefix">TRIP/</field>
+            <field name="padding">5</field>
+            <field name="number_next">1</field>
+            <field name="number_increment">1</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+        <record id="seq_transit_maintenance" model="ir.sequence">
+            <field name="name">Transit Maintenance Reference</field>
+            <field name="code">transit.maintenance</field>
+            <field name="prefix">MAINT/</field>
+            <field name="padding">5</field>
+            <field name="number_next">1</field>
+            <field name="number_increment">1</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+        <record id="seq_transit_fuel_expense" model="ir.sequence">
+            <field name="name">Transit Fuel/Expense Reference</field>
+            <field name="code">transit.fuel.expense</field>
+            <field name="prefix">EXP/</field>
+            <field name="padding">5</field>
+            <field name="number_next">1</field>
+            <field name="number_increment">1</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+    </data>
+</odoo>
