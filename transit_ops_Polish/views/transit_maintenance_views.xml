@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_transit_maintenance_list" model="ir.ui.view">
+        <field name="name">transit.maintenance.list</field>
+        <field name="model">transit.maintenance</field>
+        <field name="arch" type="xml">
+            <list string="Maintenance" decoration-muted="state == 'cancelled'"
+                  decoration-warning="state == 'in_progress'"
+                  decoration-success="state == 'done'">
+                <field name="name"/>
+                <field name="vehicle_id"/>
+                <field name="maintenance_type"/>
+                <field name="vendor"/>
+                <field name="date_scheduled"/>
+                <field name="date_completed"/>
+                <field name="cost" sum="Total Cost"/>
+                <field name="state" widget="badge"
+                       decoration-muted="state in ('draft', 'cancelled')"
+                       decoration-info="state == 'scheduled'"
+                       decoration-warning="state == 'in_progress'"
+                       decoration-success="state == 'done'"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_transit_maintenance_form" model="ir.ui.view">
+        <field name="name">transit.maintenance.form</field>
+        <field name="model">transit.maintenance</field>
+        <field name="arch" type="xml">
+            <form string="Maintenance">
+                <header>
+                    <button name="action_schedule" string="Schedule" type="object"
+                            class="oe_highlight" invisible="state != 'draft'"/>
+                    <button name="action_start" string="Start" type="object"
+                            class="oe_highlight" invisible="state != 'scheduled'"/>
+                    <button name="action_complete" string="Mark Done" type="object"
+                            class="oe_highlight" invisible="state != 'in_progress'"/>
+                    <button name="action_cancel" string="Cancel" type="object"
+                            invisible="state in ('done', 'cancelled')"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,scheduled,in_progress,done"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" readonly="1"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group string="Vehicle &amp; Type">
+                            <field name="vehicle_id" options="{'no_create': True}"/>
+                            <field name="maintenance_type"/>
+                            <field name="vendor"/>
+                        </group>
+                        <group string="Schedule">
+                            <field name="date_scheduled"/>
+                            <field name="date_completed" readonly="1"/>
+                            <field name="odometer_at_service"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Cost">
+                            <field name="cost"/>
+                            <field name="currency_id" groups="base.group_multi_currency"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Description" name="description">
+                            <field name="description"/>
+                        </page>
+                        <page string="Notes" name="notes">
+                            <field name="notes"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_transit_maintenance_search" model="ir.ui.view">
+        <field name="name">transit.maintenance.search</field>
+        <field name="model">transit.maintenance</field>
+        <field name="arch" type="xml">
+            <search string="Search Maintenance">
+                <field name="name"/>
+                <field name="vehicle_id"/>
+                <field name="vendor"/>
+                <filter string="Draft" name="filter_draft" domain="[('state', '=', 'draft')]"/>
+                <filter string="Scheduled" name="filter_scheduled" domain="[('state', '=', 'scheduled')]"/>
+                <filter string="In Progress" name="filter_in_progress" domain="[('state', '=', 'in_progress')]"/>
+                <filter string="Done" name="filter_done" domain="[('state', '=', 'done')]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Status" name="group_state" context="{'group_by': 'state'}"/>
+                    <filter string="Vehicle" name="group_vehicle" context="{'group_by': 'vehicle_id'}"/>
+                    <filter string="Type" name="group_type" context="{'group_by': 'maintenance_type'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_transit_maintenance" model="ir.actions.act_window">
+        <field name="name">Maintenance</field>
+        <field name="res_model">transit.maintenance</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_transit_maintenance_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Schedule your first maintenance record
+            </p>
+            <p>
+                Keep a full service history for every vehicle in your fleet.
+            </p>
+        </field>
+    </record>
+
+</odoo>

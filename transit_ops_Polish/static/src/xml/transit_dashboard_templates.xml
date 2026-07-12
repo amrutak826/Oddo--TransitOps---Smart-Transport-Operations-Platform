@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates xml:space="preserve">
+
+    <t t-name="transit_ops.TransitDashboard">
+        <div class="o_transit_ops o_transit_dashboard">
+            <div class="o_transit_dashboard_header">
+                <h2>
+                    <i class="fa fa-dashboard me-2" role="img" aria-label="Dashboard"/>
+                    TransitOps Dashboard
+                </h2>
+                <p class="o_transit_text_muted">Real-time overview of your fleet operations</p>
+            </div>
+
+            <div t-if="state.loading" class="o_transit_dashboard_loading">
+                <i class="fa fa-spinner fa-spin"/> Loading dashboard...
+            </div>
+
+            <div t-else="" class="o_transit_dashboard_body">
+
+                <!-- KPI Cards -->
+                <div class="o_transit_kpi_row">
+                    <div class="o_transit_kpi_card" t-on-click="onClickTotalVehicles">
+                        <div class="o_transit_kpi_icon" style="background-color:rgba(255,122,26,0.15);color:#ff7a1a;">
+                            <i class="fa fa-truck"/>
+                        </div>
+                        <div class="o_transit_kpi_content">
+                            <div class="o_transit_kpi_value" t-esc="state.vehicle.total"/>
+                            <div class="o_transit_kpi_label">Total Vehicles</div>
+                        </div>
+                    </div>
+
+                    <div class="o_transit_kpi_card" t-on-click="onClickActiveVehicles">
+                        <div class="o_transit_kpi_icon" style="background-color:rgba(61,220,132,0.15);color:#3ddc84;">
+                            <i class="fa fa-check-circle"/>
+                        </div>
+                        <div class="o_transit_kpi_content">
+                            <div class="o_transit_kpi_value" t-esc="state.vehicle.active"/>
+                            <div class="o_transit_kpi_label">Active</div>
+                        </div>
+                    </div>
+
+                    <div class="o_transit_kpi_card" t-on-click="onClickOnTripVehicles">
+                        <div class="o_transit_kpi_icon" style="background-color:rgba(79,176,255,0.15);color:#4fb0ff;">
+                            <i class="fa fa-road"/>
+                        </div>
+                        <div class="o_transit_kpi_content">
+                            <div class="o_transit_kpi_value" t-esc="state.vehicle.on_trip"/>
+                            <div class="o_transit_kpi_label">On Trip</div>
+                        </div>
+                    </div>
+
+                    <div class="o_transit_kpi_card" t-on-click="onClickMaintenanceVehicles">
+                        <div class="o_transit_kpi_icon" style="background-color:rgba(255,200,87,0.15);color:#ffc857;">
+                            <i class="fa fa-wrench"/>
+                        </div>
+                        <div class="o_transit_kpi_content">
+                            <div class="o_transit_kpi_value" t-esc="state.vehicle.maintenance"/>
+                            <div class="o_transit_kpi_label">In Maintenance</div>
+                        </div>
+                    </div>
+
+                    <div class="o_transit_kpi_card" t-on-click="onClickDocAlertVehicles">
+                        <div class="o_transit_kpi_icon" style="background-color:rgba(255,92,92,0.15);color:#ff5c5c;">
+                            <i class="fa fa-exclamation-triangle"/>
+                        </div>
+                        <div class="o_transit_kpi_content">
+                            <div class="o_transit_kpi_value" t-esc="state.vehicle.doc_alert"/>
+                            <div class="o_transit_kpi_label">Document Alerts</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Vehicle Type Breakdown -->
+                <div class="o_transit_panel">
+                    <div class="o_transit_panel_header">Fleet by Vehicle Type</div>
+                    <div class="o_transit_panel_body">
+                        <div t-if="!state.vehicleByType.length" class="o_transit_text_muted">
+                            No vehicles registered yet.
+                        </div>
+                        <div t-else="" class="o_transit_bar_list">
+                            <t t-foreach="state.vehicleByType" t-as="row" t-key="row.label">
+                                <div class="o_transit_bar_row">
+                                    <span class="o_transit_bar_label" t-esc="row.label"/>
+                                    <div class="o_transit_bar_track">
+                                        <div class="o_transit_bar_fill"
+                                             t-attf-style="width: {{ state.vehicle.total ? (row.count / state.vehicle.total * 100) : 0 }}%"/>
+                                    </div>
+                                    <span class="o_transit_bar_value" t-esc="row.count"/>
+                                </div>
+                            </t>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </t>
+
+</templates>

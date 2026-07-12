@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_transit_fuel_log_list" model="ir.ui.view">
+        <field name="name">transit.fuel.log.list</field>
+        <field name="model">transit.fuel.log</field>
+        <field name="arch" type="xml">
+            <list string="Fuel Logs">
+                <field name="date"/>
+                <field name="vehicle_id"/>
+                <field name="driver_id"/>
+                <field name="odometer"/>
+                <field name="fuel_quantity" sum="Total Fuel (L)"/>
+                <field name="fuel_cost" sum="Total Cost"/>
+                <field name="mileage_kmpl" avg="Avg Mileage"/>
+                <field name="fuel_station"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_transit_fuel_log_form" model="ir.ui.view">
+        <field name="name">transit.fuel.log.form</field>
+        <field name="model">transit.fuel.log</field>
+        <field name="arch" type="xml">
+            <form string="Fuel Log">
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" readonly="1"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group string="Vehicle">
+                            <field name="vehicle_id" options="{'no_create': True}"/>
+                            <field name="driver_id" options="{'no_create': True}"/>
+                            <field name="date"/>
+                        </group>
+                        <group string="Fill-up">
+                            <field name="odometer"/>
+                            <field name="fuel_quantity"/>
+                            <field name="fuel_cost"/>
+                            <field name="currency_id" groups="base.group_multi_currency"/>
+                            <field name="fuel_station"/>
+                            <field name="full_tank"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Computed">
+                            <field name="distance_since_last" readonly="1"/>
+                            <field name="mileage_kmpl" readonly="1"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="notes"/>
+                    </group>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_transit_fuel_log_graph" model="ir.ui.view">
+        <field name="name">transit.fuel.log.graph</field>
+        <field name="model">transit.fuel.log</field>
+        <field name="arch" type="xml">
+            <graph string="Fuel Cost Overview" type="bar">
+                <field name="date" interval="month"/>
+                <field name="fuel_cost" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <record id="view_transit_fuel_log_search" model="ir.ui.view">
+        <field name="name">transit.fuel.log.search</field>
+        <field name="model">transit.fuel.log</field>
+        <field name="arch" type="xml">
+            <search string="Search Fuel Logs">
+                <field name="vehicle_id"/>
+                <field name="driver_id"/>
+                <field name="fuel_station"/>
+                <filter string="Full Tank" name="filter_full_tank" domain="[('full_tank', '=', True)]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Vehicle" name="group_vehicle" context="{'group_by': 'vehicle_id'}"/>
+                    <filter string="Driver" name="group_driver" context="{'group_by': 'driver_id'}"/>
+                    <filter string="Date" name="group_date" context="{'group_by': 'date'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_transit_fuel_log" model="ir.actions.act_window">
+        <field name="name">Fuel Logs</field>
+        <field name="res_model">transit.fuel.log</field>
+        <field name="view_mode">list,form,graph</field>
+        <field name="search_view_id" ref="view_transit_fuel_log_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Log your first fuel fill-up
+            </p>
+            <p>
+                Track fuel spend and mileage efficiency per vehicle.
+            </p>
+        </field>
+    </record>
+
+</odoo>
