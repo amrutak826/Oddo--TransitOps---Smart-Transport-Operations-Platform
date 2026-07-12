@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="action_report_transit_expense" model="ir.actions.report">
+        <field name="name">Expense Report</field>
+        <field name="model">transit.expense</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">transit_ops.report_transit_expense_document</field>
+        <field name="report_file">transit_ops.report_transit_expense_document</field>
+        <field name="print_report_name">'Expense Report - %s' % (object.name)</field>
+        <field name="binding_model_id" ref="model_transit_expense"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <template id="report_transit_expense_document">
+        <t t-call="web.html_container">
+            <t t-call="web.external_layout">
+                <div class="transit_report_wrap page">
+                    <t t-call="transit_ops.report_transit_styles"/>
+                    <t t-call="transit_ops.report_transit_banner">
+                        <t t-set="title">Expense Report</t>
+                        <t t-set="subtitle">Operational expenses by category and driver</t>
+                    </t>
+
+                    <table class="transit_report_table">
+                        <thead>
+                            <tr>
+                                <th>Reference</th>
+                                <th>Date</th>
+                                <th>Driver</th>
+                                <th>Vehicle</th>
+                                <th>Category</th>
+                                <th>Description</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr t-foreach="docs" t-as="exp">
+                                <td><t t-esc="exp.name"/></td>
+                                <td><t t-esc="exp.date"/></td>
+                                <td><t t-esc="exp.driver_id.name"/></td>
+                                <td><t t-esc="exp.vehicle_id.name or '-'"/></td>
+                                <td><t t-esc="dict(exp._fields['category'].selection).get(exp.category, '')"/></td>
+                                <td><t t-esc="exp.description or '-'"/></td>
+                                <td><t t-esc="'%.2f' % exp.amount"/></td>
+                                <td>
+                                    <span t-attf-class="transit_badge {{ 'transit_badge_success' if exp.state == 'approved' else ('transit_badge_danger' if exp.state == 'rejected' else ('transit_badge_info' if exp.state == 'submitted' else '')) }}">
+                                        <t t-esc="dict(exp._fields['state'].selection).get(exp.state, '')"/>
+                                    </span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="transit_report_summary">
+                        Total Records: <strong><t t-esc="len(docs)"/></strong>
+                        &#160;|&#160; Approved: <strong><t t-esc="len(docs.filtered(lambda e: e.state == 'approved'))"/></strong>
+                        &#160;|&#160; Total Amount: <strong><t t-esc="'%.2f' % sum(docs.mapped('amount'))"/></strong>
+                    </div>
+                </div>
+            </t>
+        </t>
+    </template>
+
+</odoo>

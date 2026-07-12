@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <template id="report_transit_styles">
+        <style>
+            .transit_report_wrap {
+                font-family: 'Helvetica Neue', Arial, sans-serif;
+                color: #22252B;
+                font-size: 11px;
+            }
+            .transit_report_banner {
+                background: #14161B;
+                color: #ffffff;
+                padding: 16px 20px;
+                border-radius: 6px;
+                margin-bottom: 18px;
+                display: table;
+                width: 100%;
+            }
+            .transit_report_banner .transit_banner_left {
+                display: table-cell;
+                vertical-align: middle;
+            }
+            .transit_report_banner .transit_banner_right {
+                display: table-cell;
+                vertical-align: middle;
+                text-align: right;
+                font-size: 10px;
+                color: #C9CDD3;
+            }
+            .transit_report_banner h2 {
+                margin: 0;
+                color: #FF7A00;
+                font-size: 20px;
+                font-weight: 700;
+            }
+            .transit_report_banner .transit_banner_sub {
+                color: #C9CDD3;
+                font-size: 11px;
+                margin-top: 3px;
+            }
+            .transit_report_table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-top: 8px;
+            }
+            .transit_report_table thead th {
+                background: #FF7A00;
+                color: #ffffff;
+                padding: 6px 8px;
+                text-align: left;
+                font-size: 10px;
+                text-transform: uppercase;
+                letter-spacing: 0.03em;
+            }
+            .transit_report_table tbody td {
+                padding: 6px 8px;
+                border-bottom: 1px solid #E6E8EB;
+                font-size: 10.5px;
+            }
+            .transit_report_table tbody tr:nth-child(even) {
+                background: #F7F8FA;
+            }
+            .transit_report_summary {
+                margin-top: 16px;
+                padding: 10px 14px;
+                background: #FFF3E8;
+                border-left: 4px solid #FF7A00;
+                border-radius: 4px;
+                font-size: 11px;
+            }
+            .transit_report_summary strong {
+                color: #C75F00;
+            }
+            .transit_badge {
+                display: inline-block;
+                padding: 2px 8px;
+                border-radius: 10px;
+                font-size: 9.5px;
+                font-weight: 600;
+                color: #ffffff;
+                background: #8A8F98;
+            }
+            .transit_badge_success { background: #3ECF8E; }
+            .transit_badge_warning { background: #FFC069; color: #22252B; }
+            .transit_badge_danger { background: #FF5C5C; }
+            .transit_badge_info { background: #3DA5F5; }
+        </style>
+    </template>
+
+    <template id="report_transit_banner">
+        <div class="transit_report_banner">
+            <div class="transit_banner_left">
+                <h2><t t-esc="title"/></h2>
+                <div class="transit_banner_sub"><t t-esc="subtitle"/></div>
+            </div>
+            <div class="transit_banner_right">
+                Generated on <span t-esc="datetime.datetime.now().strftime('%d %b %Y, %H:%M')"/><br/>
+                <t t-esc="env.company.name"/>
+            </div>
+        </div>
+    </template>
+
+</odoo>

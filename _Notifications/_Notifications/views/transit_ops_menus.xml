@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <menuitem id="menu_transit_ops_root" name="TransitOps" sequence="10"/>
+
+    <menuitem id="menu_transit_operations" name="Operations" parent="menu_transit_ops_root" sequence="10"/>
+    <menuitem id="menu_transit_vehicle" name="Vehicles" parent="menu_transit_operations" action="action_transit_vehicle" sequence="10"/>
+    <menuitem id="menu_transit_driver" name="Drivers" parent="menu_transit_operations" action="action_transit_driver" sequence="20"/>
+    <menuitem id="menu_transit_trip" name="Trips" parent="menu_transit_operations" action="action_transit_trip" sequence="30"/>
+
+    <menuitem id="menu_transit_maintenance_root" name="Maintenance" parent="menu_transit_ops_root" sequence="20"/>
+    <menuitem id="menu_transit_maintenance" name="Maintenance Records" parent="menu_transit_maintenance_root" action="action_transit_maintenance" sequence="10"/>
+
+    <menuitem id="menu_transit_fuel_root" name="Fuel &amp; Expenses" parent="menu_transit_ops_root" sequence="30"/>
+    <menuitem id="menu_transit_fuel_log" name="Fuel Logs" parent="menu_transit_fuel_root" action="action_transit_fuel_log" sequence="10"/>
+
+    <menuitem id="menu_transit_notification_root" name="Notifications" parent="menu_transit_ops_root" sequence="40"/>
+    <menuitem id="menu_transit_notification" name="All Notifications" parent="menu_transit_notification_root" action="action_transit_notification" sequence="10"/>
+
+</odoo>

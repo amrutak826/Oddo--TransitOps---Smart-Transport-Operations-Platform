@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_transit_fuel_log_list" model="ir.ui.view">
+        <field name="name">transit.fuel.log.list</field>
+        <field name="model">transit.fuel.log</field>
+        <field name="arch" type="xml">
+            <list string="Fuel Logs" editable="bottom">
+                <field name="date"/>
+                <field name="vehicle_id"/>
+                <field name="driver_id"/>
+                <field name="quantity"/>
+                <field name="unit_price"/>
+                <field name="total_cost" sum="Total"/>
+                <field name="odometer"/>
+                <field name="station"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_transit_fuel_log_form" model="ir.ui.view">
+        <field name="name">transit.fuel.log.form</field>
+        <field name="model">transit.fuel.log</field>
+        <field name="arch" type="xml">
+            <form string="Fuel Log">
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="vehicle_id"/>
+                            <field name="driver_id"/>
+                            <field name="date"/>
+                        </group>
+                        <group>
+                            <field name="quantity"/>
+                            <field name="unit_price"/>
+                            <field name="total_cost" readonly="1"/>
+                            <field name="odometer"/>
+                            <field name="station"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_transit_fuel_log" model="ir.actions.act_window">
+        <field name="name">Fuel Logs</field>
+        <field name="res_model">transit.fuel.log</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Log your first fuel entry.</p>
+        </field>
+    </record>
+
+</odoo>
