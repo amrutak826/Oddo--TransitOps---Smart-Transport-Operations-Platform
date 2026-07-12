@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <t t-name="transit_ops.NotificationMenu">
+        <Dropdown class="'o_transit_notification_menu'">
+            <t t-set-slot="toggler">
+                <div class="transit-bell-wrapper" title="TransitOps Notifications">
+                    <i class="fa fa-bell transit-bell-icon"/>
+                    <span t-if="state.unreadCount > 0" class="transit-notification-badge">
+                        <t t-esc="state.unreadCount > 99 ? '99+' : state.unreadCount"/>
+                    </span>
+                </div>
+            </t>
+            <div class="transit-notification-dropdown">
+                <div class="transit-notification-header">
+                    <span class="transit-notification-header-title">Notifications</span>
+                    <button class="btn btn-sm transit-mark-all-btn" t-on-click="onMarkAllRead" t-if="state.unreadCount > 0">
+                        Mark all read
+                    </button>
+                </div>
+                <div class="transit-notification-list">
+                    <t t-if="state.notifications.length === 0">
+                        <div class="transit-notification-empty">
+                            <i class="fa fa-check-circle"/>
+                            <span>You're all caught up</span>
+                        </div>
+                    </t>
+                    <t t-foreach="state.notifications" t-as="notif" t-key="notif.id">
+                        <DropdownItem onSelected="() => this.onClickNotification(notif)">
+                            <div t-attf-class="transit-notification-item {{ !notif.is_read ? 'unread' : '' }}">
+                                <span t-attf-class="transit-severity-dot severity-{{ notif.severity }}"/>
+                                <div class="transit-notification-content">
+                                    <div class="transit-notification-title"><t t-esc="notif.name"/></div>
+                                    <div class="transit-notification-message"><t t-esc="notif.message"/></div>
+                                    <div class="transit-notification-date"><t t-esc="notif.date_display"/></div>
+                                </div>
+                            </div>
+                        </DropdownItem>
+                    </t>
+                </div>
+                <div class="transit-notification-footer">
+                    <button class="btn btn-sm transit-view-all-btn" t-on-click="onViewAll">
+                        View All Notifications
+                    </button>
+                </div>
+            </div>
+        </Dropdown>
+    </t>
+
+</templates>
