@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <t t-name="transit_ops.Dashboard">
+        <div class="o_transit_dashboard">
+
+            <div class="o_transit_dashboard_header">
+                <div>
+                    <h2 class="o_transit_title">
+                        <i class="fa fa-bus o_transit_title_icon"/> TransitOps Dashboard
+                    </h2>
+                    <div class="o_transit_subtitle">Real-time overview of your transport operations</div>
+                </div>
+                <button class="btn o_transit_refresh_btn" t-on-click="onRefresh">
+                    <i class="fa fa-refresh"/> Refresh
+                </button>
+            </div>
+
+            <div t-if="state.loading" class="o_transit_loading">
+                <i class="fa fa-circle-o-notch fa-spin"/> Loading dashboard...
+            </div>
+
+            <div class="o_transit_kpi_grid">
+                <div class="o_transit_kpi_card">
+                    <div class="o_transit_kpi_icon o_transit_icon_orange"><i class="fa fa-truck"/></div>
+                    <div class="o_transit_kpi_body">
+                        <div class="o_transit_kpi_value"><t t-esc="state.kpis.total_vehicles"/></div>
+                        <div class="o_transit_kpi_label">Total Vehicles</div>
+                    </div>
+                </div>
+
+                <div class="o_transit_kpi_card">
+                    <div class="o_transit_kpi_icon o_transit_icon_green"><i class="fa fa-check-circle"/></div>
+                    <div class="o_transit_kpi_body">
+                        <div class="o_transit_kpi_value"><t t-esc="state.kpis.available_vehicles"/></div>
+                        <div class="o_transit_kpi_label">Available Vehicles</div>
+                    </div>
+                </div>
+
+                <div class="o_transit_kpi_card">
+                    <div class="o_transit_kpi_icon o_transit_icon_blue"><i class="fa fa-id-card"/></div>
+                    <div class="o_transit_kpi_body">
+                        <div class="o_transit_kpi_value"><t t-esc="state.kpis.total_drivers"/></div>
+                        <div class="o_transit_kpi_label">Drivers</div>
+                    </div>
+                </div>
+
+                <div class="o_transit_kpi_card">
+                    <div class="o_transit_kpi_icon o_transit_icon_orange"><i class="fa fa-road"/></div>
+                    <div class="o_transit_kpi_body">
+                        <div class="o_transit_kpi_value"><t t-esc="state.kpis.trips_today"/></div>
+                        <div class="o_transit_kpi_label">Trips Today</div>
+                    </div>
+                </div>
+
+                <div class="o_transit_kpi_card">
+                    <div class="o_transit_kpi_icon o_transit_icon_amber"><i class="fa fa-tint"/></div>
+                    <div class="o_transit_kpi_body">
+                        <div class="o_transit_kpi_value"><t t-esc="formatCurrency(state.kpis.fuel_cost_month)"/></div>
+                        <div class="o_transit_kpi_label">Fuel Cost (This Month)</div>
+                    </div>
+                </div>
+
+                <div class="o_transit_kpi_card">
+                    <div class="o_transit_kpi_icon o_transit_icon_red"><i class="fa fa-wrench"/></div>
+                    <div class="o_transit_kpi_body">
+                        <div class="o_transit_kpi_value"><t t-esc="state.kpis.maintenance_due"/></div>
+                        <div class="o_transit_kpi_label">Maintenance Due</div>
+                    </div>
+                </div>
+
+                <div class="o_transit_kpi_card o_transit_kpi_wide">
+                    <div class="o_transit_kpi_icon o_transit_icon_orange"><i class="fa fa-money"/></div>
+                    <div class="o_transit_kpi_body">
+                        <div class="o_transit_kpi_value"><t t-esc="formatCurrency(state.kpis.monthly_expense)"/></div>
+                        <div class="o_transit_kpi_label">Monthly Expense (Fuel + Other)</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="o_transit_chart_grid">
+                <div class="o_transit_chart_card">
+                    <div class="o_transit_chart_header">
+                        <span class="o_transit_chart_title">Vehicle Status</span>
+                    </div>
+                    <div class="o_transit_chart_canvas_wrap">
+                        <canvas t-ref="vehicleStatusChart"/>
+                    </div>
+                </div>
+
+                <div class="o_transit_chart_card">
+                    <div class="o_transit_chart_header">
+                        <span class="o_transit_chart_title">Trips (Last 7 Days)</span>
+                    </div>
+                    <div class="o_transit_chart_canvas_wrap">
+                        <canvas t-ref="tripsChart"/>
+                    </div>
+                </div>
+
+                <div class="o_transit_chart_card">
+                    <div class="o_transit_chart_header">
+                        <span class="o_transit_chart_title">Fuel Usage (Last 7 Days)</span>
+                    </div>
+                    <div class="o_transit_chart_canvas_wrap">
+                        <canvas t-ref="fuelChart"/>
+                    </div>
+                </div>
+
+                <div class="o_transit_chart_card">
+                    <div class="o_transit_chart_header">
+                        <span class="o_transit_chart_title">Expenses by Category (This Month)</span>
+                    </div>
+                    <div class="o_transit_chart_canvas_wrap">
+                        <canvas t-ref="expenseChart"/>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </t>
+
+</templates>
