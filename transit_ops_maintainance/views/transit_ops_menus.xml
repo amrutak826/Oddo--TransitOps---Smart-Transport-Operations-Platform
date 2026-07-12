@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- ROOT APPLICATION MENU -->
+        <menuitem id="menu_transit_ops_root"
+                  name="TransitOps"
+                  sequence="10"
+                  web_icon="transit_ops,static/description/icon.png"/>
+
+        <!-- MAINTENANCE TOP-LEVEL MENU -->
+        <menuitem id="menu_transit_maintenance_root"
+                  name="Maintenance"
+                  parent="menu_transit_ops_root"
+                  sequence="40"/>
+
+        <menuitem id="menu_transit_maintenance_all"
+                  name="Maintenance Records"
+                  parent="menu_transit_maintenance_root"
+                  action="action_transit_maintenance"
+                  sequence="10"/>
+
+        <menuitem id="menu_transit_maintenance_overdue"
+                  name="Overdue Maintenance"
+                  parent="menu_transit_maintenance_root"
+                  action="action_transit_maintenance_overdue"
+                  sequence="20"/>
+
+    </data>
+</odoo>

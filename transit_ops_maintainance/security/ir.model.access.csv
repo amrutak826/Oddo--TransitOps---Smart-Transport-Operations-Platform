@@ -1,0 +1,13 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_transit_vehicle_viewer,transit.vehicle.viewer,model_transit_vehicle,group_transit_viewer,1,0,0,0
+access_transit_vehicle_dispatcher,transit.vehicle.dispatcher,model_transit_vehicle,group_transit_dispatcher,1,0,0,0
+access_transit_vehicle_manager,transit.vehicle.manager,model_transit_vehicle,group_transit_manager,1,1,1,1
+access_transit_vehicle_admin,transit.vehicle.admin,model_transit_vehicle,group_transit_admin,1,1,1,1
+access_transit_driver_viewer,transit.driver.viewer,model_transit_driver,group_transit_viewer,1,0,0,0
+access_transit_driver_dispatcher,transit.driver.dispatcher,model_transit_driver,group_transit_dispatcher,1,0,0,0
+access_transit_driver_manager,transit.driver.manager,model_transit_driver,group_transit_manager,1,1,1,1
+access_transit_driver_admin,transit.driver.admin,model_transit_driver,group_transit_admin,1,1,1,1
+access_transit_maintenance_viewer,transit.maintenance.viewer,model_transit_maintenance,group_transit_viewer,1,0,0,0
+access_transit_maintenance_dispatcher,transit.maintenance.dispatcher,model_transit_maintenance,group_transit_dispatcher,1,0,0,0
+access_transit_maintenance_manager,transit.maintenance.manager,model_transit_maintenance,group_transit_manager,1,1,1,1
+access_transit_maintenance_admin,transit.maintenance.admin,model_transit_maintenance,group_transit_admin,1,1,1,1
