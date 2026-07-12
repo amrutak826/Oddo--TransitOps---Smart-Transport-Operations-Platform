@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+
+        <!-- ================================================================
+             MODULE CATEGORY
+        ================================================================= -->
+        <record id="module_category_transit_ops" model="ir.module.category">
+            <field name="name">Transit Operations</field>
+            <field name="description">Manage TransitOps access rights.</field>
+            <field name="sequence">15</field>
+        </record>
+
+        <!-- ================================================================
+             ROLES / GROUPS
+             Four independent, peer-level operational roles. A user can be
+             assigned any combination (e.g. Fleet Manager + Safety Officer).
+        ================================================================= -->
+
+        <!-- ROLE 1: Fleet Manager
+             Full operational authority over the whole platform: vehicles,
+             drivers, trips, maintenance, fuel/expense and notifications. -->
+        <record id="group_transit_fleet_manager" model="res.groups">
+            <field name="name">Fleet Manager</field>
+            <field name="category_id" ref="module_category_transit_ops"/>
+            <field name="users" eval="[(4, ref('base.user_admin'))]"/>
+            <field name="comment">
+Full operational control of TransitOps: register and manage vehicles and
+drivers, dispatch and oversee trips, review maintenance and approve
+fuel/expense records, and manage all notifications.
+            </field>
+        </record>
+
+        <!-- ROLE 2: Driver
+             Restricted, self-service role. A Driver only sees and manages
+             data tied to their own linked user account. -->
+        <record id="group_transit_driver" model="res.groups">
+            <field name="name">Driver</field>
+            <field name="category_id" ref="module_category_transit_ops"/>
+            <field name="comment">
+Self-service role for field drivers: view their own profile and assigned
+vehicle, update their own trips (start/complete), and submit their own
+fuel/expense claims. No visibility into other drivers' data.
+            </field>
+        </record>
+
+        <!-- ROLE 3: Safety Officer
+             Compliance and maintenance focused role. Read access across
+             vehicles/drivers/trips to audit safety and compliance, full
+             control of maintenance and safety-related notifications. No
+             access to financial (fuel/expense) data - separation of duties. -->
+        <record id="group_transit_safety_officer" model="res.groups">
+            <field name="name">Safety Officer</field>
+            <field name="category_id" ref="module_category_transit_ops"/>
+            <field name="comment">
+Compliance and safety role: monitor vehicle document expiry and driver
+license status, plan and record maintenance/inspections, and issue safety
+notifications. Read-only on vehicles, drivers and trips; no access to
+financial fuel/expense records.
+            </field>
+        </record>
+
+        <!-- ROLE 4: Financial Analyst
+             Cost and expense focused role. Read access across
+             vehicles/drivers/trips/maintenance for cost analysis, full
+             control (incl. approval workflow) of fuel/expense records. -->
+        <record id="group_transit_financial_analyst" model="res.groups">
+            <field name="name">Financial Analyst</field>
+            <field name="category_id" ref="module_category_transit_ops"/>
+            <field name="comment">
+Cost management role: review and approve/reject driver fuel and expense
+claims, and analyze operating costs across vehicles, trips and
+maintenance. Read-only on vehicles, drivers, trips and maintenance; no
+edit access to operational/dispatch records.
+            </field>
+        </record>
+
+        <!-- ================================================================
+             RECORD RULES - transit.vehicle
+             Every role that can access vehicles at all sees the full fleet
+             (row-level filtering is not required here - CRUD level is
+             already restricted per role in ir.model.access.csv).
+        ================================================================= -->
+        <record id="transit_vehicle_rule_all_roles" model="ir.rule">
+            <field name="name">Vehicle: Full Fleet Visibility for All Roles</field>
+            <field name="model_id" ref="model_transit_vehicle"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_transit_fleet_manager')),
+                                        (4, ref('group_transit_driver')),
+                                        (4, ref('group_transit_safety_officer')),
+                                        (4, ref('group_transit_financial_analyst'))]"/>
+        </record>
+
+        <!-- ================================================================
+             RECORD RULES - transit.driver
+        ================================================================= -->
+
+        <!-- Driver: can only see/edit their own linked driver record -->
+        <record id="transit_driver_rule_own" model="ir.rule">
+            <field name="name">Driver: Own Record Only</field>
+            <field name="model_id" ref="model_transit_driver"/>
+            <field name="domain_force">[('user_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('group_transit_driver'))]"/>
+            <field name="perm_read">1</field>
+            <field name="perm_write">1</field>
+            <field name="perm_create">0</field>
+            <field name="perm_unlink">0</field>
+        </record>
+
+        <!-- Fleet Manager / Safety Officer / Financial Analyst: see all drivers -->
+        <record id="transit_driver_rule_full" model="ir.rule">
+            <field name="name">Driver: Full Visibility for Manager/Safety/Finance</field>
+            <field name="model_id" ref="model_transit_driver"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_transit_fleet_manager')),
+                                        (4, ref('group_transit_safety_officer')),
+                                        (4, ref('group_transit_financial_analyst'))]"/>
+        </record>
+
+        <!-- ================================================================
+             RECORD RULES - transit.trip
+        ================================================================= -->
+
+        <!-- Driver: only trips where they are the assigned driver -->
+        <record id="transit_trip_rule_own" model="ir.rule">
+            <field name="name">Trip: Own Trips Only</field>
+            <field name="model_id" ref="model_transit_trip"/>
+            <field name="domain_force">[('driver_id.user_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('group_transit_driver'))]"/>
+            <field name="perm_read">1</field>
+            <field name="perm_write">1</field>
+            <field name="perm_create">0</field>
+            <field name="perm_unlink">0</field>
+        </record>
+
+        <!-- Fleet Manager / Safety Officer / Financial Analyst: see all trips -->
+        <record id="transit_trip_rule_full" model="ir.rule">
+            <field name="name">Trip: Full Visibility for Manager/Safety/Finance</field>
+            <field name="model_id" ref="model_transit_trip"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_transit_fleet_manager')),
+                                        (4, ref('group_transit_safety_officer')),
+                                        (4, ref('group_transit_financial_analyst'))]"/>
+        </record>
+
+        <!-- ================================================================
+             RECORD RULES - transit.maintenance
+             Drivers have no access at all (see ir.model.access.csv), so no
+             row-level rule is required for them. Safety Officer and Fleet
+             Manager get full CRUD; Financial Analyst gets read-only full
+             visibility for cost review.
+        ================================================================= -->
+        <record id="transit_maintenance_rule_full" model="ir.rule">
+            <field name="name">Maintenance: Full Visibility for Manager/Safety/Finance</field>
+            <field name="model_id" ref="model_transit_maintenance"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_transit_fleet_manager')),
+                                        (4, ref('group_transit_safety_officer')),
+                                        (4, ref('group_transit_financial_analyst'))]"/>
+        </record>
+
+        <!-- ================================================================
+             RECORD RULES - transit.fuel.expense
+             Safety Officer has no access at all (separation of duties, see
+             ir.model.access.csv), so no row-level rule is required.
+        ================================================================= -->
+
+        <!-- Driver: only their own fuel/expense claims -->
+        <record id="transit_fuel_expense_rule_own" model="ir.rule">
+            <field name="name">Fuel/Expense: Own Records Only</field>
+            <field name="model_id" ref="model_transit_fuel_expense"/>
+            <field name="domain_force">[('driver_id.user_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('group_transit_driver'))]"/>
+            <field name="perm_read">1</field>
+            <field name="perm_write">1</field>
+            <field name="perm_create">1</field>
+            <field name="perm_unlink">0</field>
+        </record>
+
+        <!-- Fleet Manager / Financial Analyst: see all fuel/expense records -->
+        <record id="transit_fuel_expense_rule_full" model="ir.rule">
+            <field name="name">Fuel/Expense: Full Visibility for Manager/Finance</field>
+            <field name="model_id" ref="model_transit_fuel_expense"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_transit_fleet_manager')),
+                                        (4, ref('group_transit_financial_analyst'))]"/>
+        </record>
+
+        <!-- ================================================================
+             RECORD RULES - transit.notification
+             Each role only needs to see notifications relevant to their
+             area of responsibility, in addition to anything addressed
+             to them personally.
+        ================================================================= -->
+
+        <!-- Driver: notifications addressed to them, or unassigned/broadcast -->
+        <record id="transit_notification_rule_driver" model="ir.rule">
+            <field name="name">Notification: Own or Broadcast (Driver)</field>
+            <field name="model_id" ref="model_transit_notification"/>
+            <field name="domain_force">['|', ('user_id', '=', user.id), ('user_id', '=', False)]</field>
+            <field name="groups" eval="[(4, ref('group_transit_driver'))]"/>
+            <field name="perm_read">1</field>
+            <field name="perm_write">1</field>
+            <field name="perm_create">0</field>
+            <field name="perm_unlink">0</field>
+        </record>
+
+        <!-- Safety Officer: safety/compliance related notification types -->
+        <record id="transit_notification_rule_safety" model="ir.rule">
+            <field name="name">Notification: Safety-Related Types Only</field>
+            <field name="model_id" ref="model_transit_notification"/>
+            <field name="domain_force">[('notification_type', 'in',
+                ['document_expiry', 'license_expiry', 'maintenance_due', 'trip_alert', 'general'])]</field>
+            <field name="groups" eval="[(4, ref('group_transit_safety_officer'))]"/>
+        </record>
+
+        <!-- Financial Analyst: expense-related notification types -->
+        <record id="transit_notification_rule_finance" model="ir.rule">
+            <field name="name">Notification: Expense-Related Types Only</field>
+            <field name="model_id" ref="model_transit_notification"/>
+            <field name="domain_force">[('notification_type', 'in', ['expense_alert', 'general'])]</field>
+            <field name="groups" eval="[(4, ref('group_transit_financial_analyst'))]"/>
+        </record>
+
+        <!-- Fleet Manager: full visibility on every notification -->
+        <record id="transit_notification_rule_manager" model="ir.rule">
+            <field name="name">Notification: Full Visibility for Fleet Manager</field>
+            <field name="model_id" ref="model_transit_notification"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_transit_fleet_manager'))]"/>
+        </record>
+
+    </data>
+</odoo>

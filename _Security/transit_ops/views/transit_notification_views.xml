@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_transit_notification_list" model="ir.ui.view">
+        <field name="name">transit.notification.list</field>
+        <field name="model">transit.notification</field>
+        <field name="arch" type="xml">
+            <list string="Notifications" decoration-bf="state == 'unread'" sample="1">
+                <field name="date"/>
+                <field name="title"/>
+                <field name="notification_type"/>
+                <field name="vehicle_id"/>
+                <field name="driver_id"/>
+                <field name="user_id"/>
+                <field name="severity" widget="badge"
+                       decoration-success="severity == 'low'"
+                       decoration-warning="severity == 'medium'"
+                       decoration-danger="severity == 'high'"/>
+                <field name="state" widget="badge"
+                       decoration-info="state == 'unread'"
+                       decoration-muted="state == 'read'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_transit_notification_form" model="ir.ui.view">
+        <field name="name">transit.notification.form</field>
+        <field name="model">transit.notification</field>
+        <field name="arch" type="xml">
+            <form string="Notification">
+                <header>
+                    <button name="action_mark_read" type="object" string="Mark as Read"
+                            class="oe_highlight" invisible="state != 'unread'"/>
+                    <button name="action_mark_unread" type="object" string="Mark as Unread"
+                            invisible="state != 'read'"/>
+                    <field name="state" widget="statusbar" statusbar_visible="unread,read"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="title"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="notification_type"/>
+                            <field name="severity"/>
+                            <field name="date"/>
+                            <field name="user_id"/>
+                        </group>
+                        <group string="Related Records">
+                            <field name="vehicle_id"/>
+                            <field name="driver_id"/>
+                            <field name="trip_id"/>
+                            <field name="expense_id"/>
+                        </group>
+                    </group>
+                    <group string="Message">
+                        <field name="message" nolabel="1"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_transit_notification_search" model="ir.ui.view">
+        <field name="name">transit.notification.search</field>
+        <field name="model">transit.notification</field>
+        <field name="arch" type="xml">
+            <search string="Search Notifications">
+                <field name="title"/>
+                <field name="vehicle_id"/>
+                <field name="driver_id"/>
+                <filter string="Unread" name="filter_unread" domain="[('state', '=', 'unread')]"/>
+                <filter string="High Severity" name="filter_high" domain="[('severity', '=', 'high')]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Type" name="group_type" context="{'group_by': 'notification_type'}"/>
+                    <filter string="Severity" name="group_severity" context="{'group_by': 'severity'}"/>
+                    <filter string="Status" name="group_state" context="{'group_by': 'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_transit_notification" model="ir.actions.act_window">
+        <field name="name">Notifications</field>
+        <field name="res_model">transit.notification</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_transit_notification_search"/>
+        <field name="context">{'search_default_filter_unread': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">No notifications yet</p>
+            <p>Document expiry, license expiry and other operational alerts appear here.</p>
+        </field>
+    </record>
+
+</odoo>

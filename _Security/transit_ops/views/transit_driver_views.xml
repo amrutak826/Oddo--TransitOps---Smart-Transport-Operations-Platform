@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ==================================================================
+         List View
+    =================================================================== -->
+    <record id="view_transit_driver_list" model="ir.ui.view">
+        <field name="name">transit.driver.list</field>
+        <field name="model">transit.driver</field>
+        <field name="arch" type="xml">
+            <list string="Drivers" sample="1">
+                <field name="driver_code"/>
+                <field name="name"/>
+                <field name="phone"/>
+                <field name="license_number"/>
+                <field name="license_expiry"/>
+                <field name="assigned_vehicle_id"/>
+                <field name="rating" widget="float" avg="Avg Rating"/>
+                <field name="license_alert_level" widget="badge"
+                       decoration-success="license_alert_level == 'none'"
+                       decoration-warning="license_alert_level == 'warning'"
+                       decoration-danger="license_alert_level == 'danger'"/>
+                <field name="status" widget="badge"
+                       decoration-success="status == 'available'"
+                       decoration-info="status == 'on_trip'"
+                       decoration-warning="status == 'on_leave'"
+                       decoration-danger="status == 'suspended'"
+                       decoration-muted="status == 'inactive'"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ==================================================================
+         Form View
+    =================================================================== -->
+    <record id="view_transit_driver_form" model="ir.ui.view">
+        <field name="name">transit.driver.form</field>
+        <field name="model">transit.driver</field>
+        <field name="arch" type="xml">
+            <form string="Driver">
+                <header>
+                    <button name="action_set_available" type="object" string="Set Available"
+                            class="oe_highlight" invisible="status == 'available'"/>
+                    <button name="action_set_on_leave" type="object" string="Mark On Leave"
+                            invisible="status == 'on_leave'"/>
+                    <button name="action_set_suspended" type="object" string="Suspend"
+                            confirm="Are you sure you want to suspend this driver?"
+                            invisible="status == 'suspended'"/>
+                    <field name="status" widget="statusbar"
+                           statusbar_visible="available,on_trip,on_leave,suspended,inactive"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_trips" type="object"
+                                class="oe_stat_button" icon="fa-road">
+                            <field name="trip_count" widget="statinfo" string="Trips"/>
+                        </button>
+                    </div>
+                    <field name="photo" widget="image" class="oe_avatar"/>
+                    <div class="oe_title">
+                        <span class="o_form_label text-muted">
+                            <field name="driver_code" readonly="1"/>
+                        </span>
+                        <h1>
+                            <field name="name" placeholder="Driver full name"/>
+                        </h1>
+                        <field name="license_alert_level" invisible="1"/>
+                        <div class="alert alert-danger" role="alert"
+                             invisible="license_alert_level != 'danger'">
+                            <strong>License Expired</strong> on <field name="license_expiry" readonly="1" nolabel="1"/>
+                        </div>
+                        <div class="alert alert-warning" role="alert"
+                             invisible="license_alert_level != 'warning'">
+                            <strong>License Expiring Soon</strong> on <field name="license_expiry" readonly="1" nolabel="1"/>
+                        </div>
+                    </div>
+                    <group>
+                        <group string="Contact">
+                            <field name="phone"/>
+                            <field name="mobile"/>
+                            <field name="email"/>
+                            <field name="address"/>
+                        </group>
+                        <group string="Personal">
+                            <field name="date_of_birth"/>
+                            <field name="date_of_joining"/>
+                            <field name="blood_group"/>
+                            <field name="employee_id"/>
+                            <field name="user_id"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="License">
+                            <field name="license_number"/>
+                            <field name="license_type"/>
+                            <field name="license_issue_date"/>
+                            <field name="license_expiry"/>
+                        </group>
+                        <group string="Assignment &amp; Performance">
+                            <field name="assigned_vehicle_id"/>
+                            <field name="rating"/>
+                            <field name="total_distance_km" readonly="1"/>
+                            <field name="completed_trip_count" readonly="1"/>
+                        </group>
+                    </group>
+                    <group string="Emergency Contact">
+                        <group>
+                            <field name="emergency_contact_name"/>
+                            <field name="emergency_contact_phone"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Notes" name="notes">
+                            <field name="notes" placeholder="Additional notes about this driver..."/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <!-- ==================================================================
+         Kanban View
+    =================================================================== -->
+    <record id="view_transit_driver_kanban" model="ir.ui.view">
+        <field name="name">transit.driver.kanban</field>
+        <field name="model">transit.driver</field>
+        <field name="arch" type="xml">
+            <kanban class="o_transit_kanban" sample="1">
+                <field name="name"/>
+                <field name="status"/>
+                <field name="license_alert_level"/>
+                <templates>
+                    <t t-name="card">
+                        <div class="oe_kanban_global_click o_transit_driver_card">
+                            <div class="d-flex align-items-start">
+                                <img t-att-src="kanban_image('transit.driver', 'photo', record.id.raw_value)"
+                                     alt="Driver" class="o_kanban_image_fit_cover rounded-circle me-2"
+                                     width="48" height="48"/>
+                                <div class="flex-grow-1">
+                                    <strong><field name="name"/></strong>
+                                    <div class="text-muted"><field name="license_number"/></div>
+                                    <div class="text-muted"><field name="assigned_vehicle_id"/></div>
+                                </div>
+                            </div>
+                            <div class="mt-2 d-flex justify-content-between align-items-center">
+                                <field name="status" widget="badge"
+                                       decoration-success="status == 'available'"
+                                       decoration-info="status == 'on_trip'"
+                                       decoration-warning="status == 'on_leave'"
+                                       decoration-danger="status == 'suspended'"
+                                       decoration-muted="status == 'inactive'"/>
+                                <field name="license_alert_level" widget="badge"
+                                       decoration-success="license_alert_level == 'none'"
+                                       decoration-warning="license_alert_level == 'warning'"
+                                       decoration-danger="license_alert_level == 'danger'"/>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- ==================================================================
+         Search View
+    =================================================================== -->
+    <record id="view_transit_driver_search" model="ir.ui.view">
+        <field name="name">transit.driver.search</field>
+        <field name="model">transit.driver</field>
+        <field name="arch" type="xml">
+            <search string="Search Drivers">
+                <field name="name" string="Driver"
+                       filter_domain="['|', '|', ('name', 'ilike', self), ('driver_code', 'ilike', self), ('license_number', 'ilike', self)]"/>
+                <field name="assigned_vehicle_id"/>
+                <field name="license_type"/>
+                <filter string="Available" name="filter_available" domain="[('status', '=', 'available')]"/>
+                <filter string="On Trip" name="filter_on_trip" domain="[('status', '=', 'on_trip')]"/>
+                <filter string="On Leave" name="filter_on_leave" domain="[('status', '=', 'on_leave')]"/>
+                <filter string="License Expiring/Expired" name="filter_license_alert"
+                        domain="[('license_alert_level', 'in', ('warning', 'danger'))]"/>
+                <separator/>
+                <filter string="Archived" name="filter_archived" domain="[('active', '=', False)]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Status" name="group_status" context="{'group_by': 'status'}"/>
+                    <filter string="License Type" name="group_license_type" context="{'group_by': 'license_type'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ==================================================================
+         Action
+    =================================================================== -->
+    <record id="action_transit_driver" model="ir.actions.act_window">
+        <field name="name">Drivers</field>
+        <field name="res_model">transit.driver</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="search_view_id" ref="view_transit_driver_search"/>
+        <field name="context">{'search_default_filter_available': 0}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Add your first driver
+            </p>
+            <p>
+                Manage driver licenses, assignments and performance in one place.
+            </p>
+        </field>
+    </record>
+
+</odoo>
