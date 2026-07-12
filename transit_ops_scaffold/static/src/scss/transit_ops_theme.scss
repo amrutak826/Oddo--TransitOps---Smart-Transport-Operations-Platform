@@ -1,0 +1,135 @@
+// =============================================================================
+// TransitOps Theme
+// Dark, futuristic control-center aesthetic with orange accents.
+// Scoped under .o_transit_ops so it never leaks into the rest of the Odoo UI.
+// =============================================================================
+
+:root {
+    --transit-bg-primary:    #0d1117;
+    --transit-bg-secondary:  #161b22;
+    --transit-bg-card:       #1c2129;
+    --transit-border:        #2a2f38;
+
+    --transit-orange:        #ff7a1a;
+    --transit-orange-soft:   #ffa552;
+    --transit-orange-glow:   rgba(255, 122, 26, 0.35);
+
+    --transit-text-primary:  #e6e6e6;
+    --transit-text-muted:    #9aa2ab;
+
+    --transit-success:       #3ddc97;
+    --transit-warning:       #ffc857;
+    --transit-danger:        #ff5c5c;
+    --transit-info:          #4fa3ff;
+
+    --transit-radius-sm:     6px;
+    --transit-radius-md:     10px;
+    --transit-radius-lg:     16px;
+    --transit-shadow-card:   0 4px 18px rgba(0, 0, 0, 0.35);
+}
+
+.o_transit_ops {
+    background-color: var(--transit-bg-primary);
+    color: var(--transit-text-primary);
+    font-family: 'Segoe UI', Roboto, Arial, sans-serif;
+
+    // ---- Generic surfaces ---------------------------------------------
+    .o_transit_card {
+        background-color: var(--transit-bg-card);
+        border: 1px solid var(--transit-border);
+        border-radius: var(--transit-radius-md);
+        box-shadow: var(--transit-shadow-card);
+        padding: 16px 18px;
+        transition: border-color 0.15s ease, transform 0.15s ease;
+
+        &:hover {
+            border-color: var(--transit-orange);
+            transform: translateY(-2px);
+        }
+    }
+
+    .o_transit_panel_header {
+        color: var(--transit-orange);
+        font-weight: 600;
+        letter-spacing: 0.02em;
+        text-transform: uppercase;
+        font-size: 0.78rem;
+        margin-bottom: 8px;
+    }
+
+    // ---- KPI tiles (used on the Dashboard) -----------------------------
+    .o_transit_kpi {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+
+        .o_transit_kpi_value {
+            font-size: 1.85rem;
+            font-weight: 700;
+            color: var(--transit-text-primary);
+        }
+
+        .o_transit_kpi_label {
+            font-size: 0.8rem;
+            color: var(--transit-text-muted);
+        }
+
+        &.o_transit_kpi_accent .o_transit_kpi_value {
+            color: var(--transit-orange);
+        }
+    }
+
+    // ---- Status badges ---------------------------------------------------
+    .o_transit_badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 2px 10px;
+        border-radius: 999px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        background-color: rgba(255, 255, 255, 0.06);
+
+        &.o_transit_badge_success { color: var(--transit-success); background-color: rgba(61, 220, 151, 0.12); }
+        &.o_transit_badge_warning { color: var(--transit-warning); background-color: rgba(255, 200, 87, 0.12); }
+        &.o_transit_badge_danger  { color: var(--transit-danger);  background-color: rgba(255, 92, 92, 0.12); }
+        &.o_transit_badge_info    { color: var(--transit-info);    background-color: rgba(79, 163, 255, 0.12); }
+        &.o_transit_badge_orange  { color: var(--transit-orange);  background-color: var(--transit-orange-glow); }
+    }
+
+    // ---- Primary action buttons ------------------------------------------
+    .o_transit_btn_primary {
+        background-color: var(--transit-orange);
+        border: none;
+        color: #0d1117;
+        font-weight: 600;
+        border-radius: var(--transit-radius-sm);
+        padding: 6px 16px;
+        transition: background-color 0.15s ease, box-shadow 0.15s ease;
+
+        &:hover {
+            background-color: var(--transit-orange-soft);
+            box-shadow: 0 0 0 3px var(--transit-orange-glow);
+        }
+    }
+
+    // ---- Alert / notification feed items ----------------------------------
+    .o_transit_alert_item {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        padding: 10px 4px;
+        border-bottom: 1px solid var(--transit-border);
+
+        &:last-child { border-bottom: none; }
+
+        .o_transit_alert_dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-top: 6px;
+            flex: 0 0 auto;
+            background-color: var(--transit-orange);
+        }
+    }
+}
