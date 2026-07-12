@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+
+        <!-- ============================================================
+             MODULE CATEGORY
+        ============================================================= -->
+        <record id="module_category_transit_ops" model="ir.module.category">
+            <field name="name">Transit Ops</field>
+            <field name="description">Access rights for TransitOps - Smart Transport Operations Platform</field>
+            <field name="sequence">15</field>
+        </record>
+
+        <!-- ============================================================
+             GROUPS
+        ============================================================= -->
+
+        <!-- Level 1: Dispatcher / Operator - day to day operational access -->
+        <record id="group_transit_dispatcher" model="res.groups">
+            <field name="name">Dispatcher</field>
+            <field name="category_id" ref="module_category_transit_ops"/>
+            <field name="comment">Can manage trips, view vehicles and drivers, log fuel &amp; expenses.</field>
+        </record>
+
+        <!-- Level 2: Fleet Manager - full operational + master data access -->
+        <record id="group_transit_manager" model="res.groups">
+            <field name="name">Fleet Manager</field>
+            <field name="category_id" ref="module_category_transit_ops"/>
+            <field name="implied_ids" eval="[(4, ref('group_transit_dispatcher'))]"/>
+            <field name="comment">Full access to vehicles, drivers, trips, maintenance, fuel, expenses and reports.</field>
+        </record>
+
+        <!-- Level 3: Administrator - full access + configuration -->
+        <record id="group_transit_admin" model="res.groups">
+            <field name="name">Administrator</field>
+            <field name="category_id" ref="module_category_transit_ops"/>
+            <field name="implied_ids" eval="[(4, ref('group_transit_manager'))]"/>
+            <field name="comment">Full access including configuration, security and system settings.</field>
+        </record>
+
+        <!-- ============================================================
+             RECORD RULES - Multi company safety
+        ============================================================= -->
+        <record id="transit_vehicle_company_rule" model="ir.rule">
+            <field name="name">Transit Vehicle: multi-company</field>
+            <field name="model_id" search="[('model', '=', 'transit.vehicle')]" model="ir.model"/>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        </record>
+
+        <record id="transit_driver_company_rule" model="ir.rule">
+            <field name="name">Transit Driver: multi-company</field>
+            <field name="model_id" search="[('model', '=', 'transit.driver')]" model="ir.model"/>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        </record>
+
+    </data>
+</odoo>

@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- ============================================================
+             LIST VIEW
+        ============================================================= -->
+        <record id="view_transit_driver_list" model="ir.ui.view">
+            <field name="name">transit.driver.list</field>
+            <field name="model">transit.driver</field>
+            <field name="arch" type="xml">
+                <list string="Drivers" decoration-danger="license_alert==True" decoration-muted="status=='suspended'">
+                    <field name="name"/>
+                    <field name="employee_code"/>
+                    <field name="license_number"/>
+                    <field name="license_type"/>
+                    <field name="license_expiry"/>
+                    <field name="vehicle_id"/>
+                    <field name="mobile"/>
+                    <field name="rating" widget="float"/>
+                    <field name="license_alert" invisible="1"/>
+                    <field name="status" widget="badge"
+                           decoration-success="status=='available'"
+                           decoration-info="status=='on_trip'"
+                           decoration-warning="status=='off_duty'"
+                           decoration-danger="status=='suspended'"/>
+                </list>
+            </field>
+        </record>
+
+        <!-- ============================================================
+             FORM VIEW
+        ============================================================= -->
+        <record id="view_transit_driver_form" model="ir.ui.view">
+            <field name="name">transit.driver.form</field>
+            <field name="model">transit.driver</field>
+            <field name="arch" type="xml">
+                <form string="Driver">
+                    <header>
+                        <button name="action_set_available" type="object" string="Set Available"
+                                class="oe_highlight" invisible="status == 'available'"/>
+                        <button name="action_set_off_duty" type="object" string="Set Off Duty"
+                                invisible="status == 'off_duty'"/>
+                        <button name="action_suspend_driver" type="object" string="Suspend"
+                                confirm="Are you sure you want to suspend this driver?"
+                                invisible="status == 'suspended'"/>
+                        <field name="status" widget="statusbar"
+                               statusbar_visible="available,on_trip,off_duty,suspended"/>
+                    </header>
+                    <sheet>
+                        <field name="photo" widget="image" class="oe_avatar"/>
+                        <div class="oe_title">
+                            <h1>
+                                <field name="name" placeholder="Driver full name"/>
+                            </h1>
+                            <h3>
+                                <field name="employee_code" placeholder="Employee ID"/>
+                            </h3>
+                        </div>
+                        <group>
+                            <group string="License Details">
+                                <field name="license_number"/>
+                                <field name="license_type"/>
+                                <field name="license_expiry"/>
+                                <field name="license_days_left" readonly="1"
+                                       invisible="not license_alert"/>
+                            </group>
+                            <group string="Contact">
+                                <field name="phone"/>
+                                <field name="mobile"/>
+                                <field name="email" widget="email"/>
+                            </group>
+                        </group>
+                        <group>
+                            <group string="Employment">
+                                <field name="date_of_birth"/>
+                                <field name="date_joined"/>
+                                <field name="user_id"/>
+                                <field name="company_id" groups="base.group_multi_company"/>
+                            </group>
+                            <group string="Performance">
+                                <field name="vehicle_id"/>
+                                <field name="rating"/>
+                                <field name="total_trips"/>
+                            </group>
+                        </group>
+                        <div class="alert alert-warning" role="alert" invisible="not license_alert">
+                            ⚠ This driver's license is expiring soon or has already expired!
+                        </div>
+                        <notebook>
+                            <page string="Address &amp; Notes">
+                                <field name="address" placeholder="Residential address..."/>
+                                <field name="notes" placeholder="Additional notes..."/>
+                            </page>
+                        </notebook>
+                    </sheet>
+                    <chatter/>
+                </form>
+            </field>
+        </record>
+
+        <!-- ============================================================
+             KANBAN VIEW
+        ============================================================= -->
+        <record id="view_transit_driver_kanban" model="ir.ui.view">
+            <field name="name">transit.driver.kanban</field>
+            <field name="model">transit.driver</field>
+            <field name="arch" type="xml">
+                <kanban class="o_kanban_mobile" default_group_by="status">
+                    <field name="name"/>
+                    <field name="license_number"/>
+                    <field name="vehicle_id"/>
+                    <field name="status"/>
+                    <field name="license_alert"/>
+                    <field name="photo"/>
+                    <field name="rating"/>
+                    <templates>
+                        <t t-name="card">
+                            <div class="oe_kanban_global_click transit_kanban_card">
+                                <div class="d-flex">
+                                    <img t-att-src="kanban_image('transit.driver', 'photo', record.id.raw_value)"
+                                         class="o_kanban_image rounded-circle" alt="Driver" width="48" height="48"/>
+                                    <div class="ms-2">
+                                        <strong><field name="name"/></strong>
+                                        <div class="text-muted">
+                                            License: <field name="license_number"/>
+                                        </div>
+                                        <div t-if="record.vehicle_id.raw_value">
+                                            Vehicle: <field name="vehicle_id"/>
+                                        </div>
+                                        <span t-if="record.license_alert.raw_value" class="badge text-bg-danger">
+                                            License Alert
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
+                    </templates>
+                </kanban>
+            </field>
+        </record>
+
+        <!-- ============================================================
+             SEARCH VIEW
+        ============================================================= -->
+        <record id="view_transit_driver_search" model="ir.ui.view">
+            <field name="name">transit.driver.search</field>
+            <field name="model">transit.driver</field>
+            <field name="arch" type="xml">
+                <search string="Search Drivers">
+                    <field name="name" string="Driver" filter_domain="['|', ('name', 'ilike', self), ('license_number', 'ilike', self)]"/>
+                    <field name="vehicle_id"/>
+                    <field name="license_type"/>
+                    <filter string="Available" name="filter_available" domain="[('status', '=', 'available')]"/>
+                    <filter string="On Trip" name="filter_on_trip" domain="[('status', '=', 'on_trip')]"/>
+                    <filter string="Off Duty" name="filter_off_duty" domain="[('status', '=', 'off_duty')]"/>
+                    <filter string="License Alerts" name="filter_license_alert" domain="[('license_alert', '=', True)]"/>
+                    <separator/>
+                    <filter string="Unassigned Vehicle" name="filter_no_vehicle" domain="[('vehicle_id', '=', False)]"/>
+                    <group expand="0" string="Group By">
+                        <filter string="Status" name="group_status" context="{'group_by': 'status'}"/>
+                        <filter string="License Type" name="group_license_type" context="{'group_by': 'license_type'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <!-- ============================================================
+             ACTION
+        ============================================================= -->
+        <record id="action_transit_driver" model="ir.actions.act_window">
+            <field name="name">Drivers</field>
+            <field name="res_model">transit.driver</field>
+            <field name="view_mode">kanban,list,form</field>
+            <field name="search_view_id" ref="view_transit_driver_search"/>
+            <field name="context">{'search_default_filter_available': 0}</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Add your first driver
+                </p>
+                <p>
+                    Keep track of licenses, contact details and vehicle assignments.
+                </p>
+            </field>
+        </record>
+
+        <!-- ============================================================
+             MENU
+        ============================================================= -->
+        <menuitem id="menu_transit_driver"
+                  name="Drivers"
+                  parent="menu_transit_fleet"
+                  action="action_transit_driver"
+                  sequence="20"/>
+
+    </data>
+</odoo>

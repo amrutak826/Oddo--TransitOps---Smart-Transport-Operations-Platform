@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- ============================================================
+             ROOT APPLICATION MENU
+        ============================================================= -->
+        <menuitem id="menu_transit_root"
+                  name="TransitOps"
+                  sequence="5"
+                  web_icon="transit_ops,static/description/icon.png"/>
+
+        <!-- Top level sections (children populated by feature-specific view files) -->
+        <menuitem id="menu_transit_operations"
+                  name="Operations"
+                  parent="menu_transit_root"
+                  sequence="10"/>
+
+        <menuitem id="menu_transit_fleet"
+                  name="Fleet"
+                  parent="menu_transit_root"
+                  sequence="20"/>
+
+        <menuitem id="menu_transit_reports"
+                  name="Reports"
+                  parent="menu_transit_root"
+                  sequence="40"/>
+
+        <menuitem id="menu_transit_configuration"
+                  name="Configuration"
+                  parent="menu_transit_root"
+                  groups="transit_ops.group_transit_admin"
+                  sequence="90"/>
+
+    </data>
+</odoo>

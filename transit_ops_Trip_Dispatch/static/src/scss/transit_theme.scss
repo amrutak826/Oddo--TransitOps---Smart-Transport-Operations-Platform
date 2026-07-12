@@ -1,0 +1,83 @@
+/* ==========================================================================
+   TransitOps - Dark Theme with Orange Accents
+   ========================================================================== */
+
+:root {
+    --transit-bg-dark: #12141a;
+    --transit-bg-panel: #1a1d25;
+    --transit-bg-elevated: #21252f;
+    --transit-border: #2c303c;
+    --transit-orange: #ff7a1a;
+    --transit-orange-dark: #e8620a;
+    --transit-orange-soft: rgba(255, 122, 26, 0.15);
+    --transit-text: #e8e9ee;
+    --transit-text-muted: #9297a6;
+    --transit-success: #2ecc71;
+    --transit-danger: #ff4757;
+    --transit-warning: #ffb020;
+    --transit-info: #3aa0ff;
+}
+
+/* Kanban cards used by Vehicle & Driver kanban views */
+.transit_kanban_card {
+    background: var(--transit-bg-panel);
+    border: 1px solid var(--transit-border);
+    border-radius: 10px;
+    padding: 10px 12px;
+    color: var(--transit-text);
+    transition: border-color 0.15s ease, transform 0.15s ease;
+}
+
+.transit_kanban_card:hover {
+    border-color: var(--transit-orange);
+    transform: translateY(-1px);
+}
+
+.transit_kanban_card .text-muted {
+    color: var(--transit-text-muted) !important;
+    font-size: 12px;
+}
+
+.transit_kanban_card .badge.text-bg-danger {
+    background-color: var(--transit-danger) !important;
+    margin-top: 4px;
+    display: inline-block;
+}
+
+.transit_kanban_card strong {
+    color: var(--transit-text);
+    font-size: 14px;
+}
+
+/* Orange accent for primary buttons within TransitOps forms */
+.o_form_view .oe_button_box .oe_stat_button.transit-accent,
+.o_statusbar_status button.o_arrow_button.btn-primary {
+    background-color: var(--transit-orange);
+    border-color: var(--transit-orange-dark);
+}
+
+/* Alert banner used on document / license expiry warnings */
+.o_form_view .alert-warning {
+    background-color: var(--transit-orange-soft);
+    border: 1px solid var(--transit-orange);
+    color: var(--transit-orange);
+    border-radius: 8px;
+}
+
+/* Trip priority stars - orange accent */
+.o_priority .o_priority_star.fa-star {
+    color: var(--transit-orange) !important;
+}
+
+/* Trip status badges */
+.o_field_badge .badge {
+    border-radius: 6px;
+    font-weight: 500;
+}
+
+/* Calendar view trip color coding aligns with status decorations */
+.o_calendar_renderer .fc-event.status_in_transit {
+    background-color: var(--transit-orange) !important;
+    border-color: var(--transit-orange-dark) !important;
+}
+

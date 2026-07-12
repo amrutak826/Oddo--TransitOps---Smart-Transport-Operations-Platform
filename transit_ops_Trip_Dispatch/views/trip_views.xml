@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- ============================================================
+             LIST VIEW
+        ============================================================= -->
+        <record id="view_transit_trip_list" model="ir.ui.view">
+            <field name="name">transit.trip.list</field>
+            <field name="model">transit.trip</field>
+            <field name="arch" type="xml">
+                <list string="Trips" decoration-danger="status=='cancelled'" decoration-muted="status=='completed'"
+                      decoration-info="status=='in_transit'">
+                    <field name="name"/>
+                    <field name="trip_date"/>
+                    <field name="pickup_location"/>
+                    <field name="destination"/>
+                    <field name="vehicle_id"/>
+                    <field name="driver_id"/>
+                    <field name="start_time" widget="float_time"/>
+                    <field name="end_time" widget="float_time"/>
+                    <field name="distance" sum="Total km"/>
+                    <field name="fuel_used" sum="Total fuel"/>
+                    <field name="priority" widget="priority"/>
+                    <field name="status" widget="badge"
+                           decoration-muted="status=='draft'"
+                           decoration-info="status=='assigned'"
+                           decoration-primary="status=='in_transit'"
+                           decoration-success="status=='completed'"
+                           decoration-danger="status=='cancelled'"/>
+                </list>
+            </field>
+        </record>
+
+        <!-- ============================================================
+             FORM VIEW
+        ============================================================= -->
+        <record id="view_transit_trip_form" model="ir.ui.view">
+            <field name="name">transit.trip.form</field>
+            <field name="model">transit.trip</field>
+            <field name="arch" type="xml">
+                <form string="Trip">
+                    <header>
+                        <button name="action_assign" type="object" string="Assign"
+                                class="oe_highlight" invisible="status != 'draft'"/>
+                        <button name="action_start_trip" type="object" string="Start Trip"
+                                class="oe_highlight" invisible="status != 'assigned'"/>
+                        <button name="action_complete_trip" type="object" string="Complete Trip"
+                                class="oe_highlight" invisible="status != 'in_transit'"/>
+                        <button name="action_cancel_trip" type="object" string="Cancel"
+                                confirm="Are you sure you want to cancel this trip?"
+                                invisible="status in ('completed', 'cancelled')"/>
+                        <button name="action_reset_to_draft" type="object" string="Reset to Draft"
+                                invisible="status != 'cancelled'"/>
+                        <field name="status" widget="statusbar"
+                               statusbar_visible="draft,assigned,in_transit,completed"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_title">
+                            <h1>
+                                <field name="name" readonly="1"/>
+                            </h1>
+                        </div>
+                        <group>
+                            <group string="Route">
+                                <field name="pickup_location"/>
+                                <field name="destination"/>
+                                <field name="distance"/>
+                            </group>
+                            <group string="Schedule">
+                                <field name="trip_date"/>
+                                <field name="start_time" widget="float_time"/>
+                                <field name="end_time" widget="float_time"/>
+                                <field name="priority" widget="priority"/>
+                            </group>
+                        </group>
+                        <group>
+                            <group string="Assignment">
+                                <field name="vehicle_id"
+                                       readonly="status in ('in_transit', 'completed', 'cancelled')"/>
+                                <field name="driver_id"
+                                       readonly="status in ('in_transit', 'completed', 'cancelled')"/>
+                                <field name="company_id" groups="base.group_multi_company"/>
+                            </group>
+                            <group string="Trip Metrics">
+                                <field name="fuel_used"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Remarks">
+                                <field name="remarks" placeholder="Any additional notes about this trip..."/>
+                            </page>
+                        </notebook>
+                    </sheet>
+                    <chatter/>
+                </form>
+            </field>
+        </record>
+
+        <!-- ============================================================
+             KANBAN VIEW
+        ============================================================= -->
+        <record id="view_transit_trip_kanban" model="ir.ui.view">
+            <field name="name">transit.trip.kanban</field>
+            <field name="model">transit.trip</field>
+            <field name="arch" type="xml">
+                <kanban class="o_kanban_mobile" default_group_by="status">
+                    <field name="name"/>
+                    <field name="pickup_location"/>
+                    <field name="destination"/>
+                    <field name="vehicle_id"/>
+                    <field name="driver_id"/>
+                    <field name="trip_date"/>
+                    <field name="status"/>
+                    <field name="priority"/>
+                    <templates>
+                        <t t-name="card">
+                            <div class="oe_kanban_global_click transit_kanban_card">
+                                <div class="d-flex justify-content-between">
+                                    <strong><field name="name"/></strong>
+                                    <field name="priority" widget="priority"/>
+                                </div>
+                                <div class="text-muted">
+                                    <field name="pickup_location"/> → <field name="destination"/>
+                                </div>
+                                <div class="text-muted">
+                                    <field name="trip_date"/>
+                                </div>
+                                <div t-if="record.vehicle_id.raw_value">
+                                    🚐 <field name="vehicle_id"/>
+                                </div>
+                                <div t-if="record.driver_id.raw_value">
+                                    👤 <field name="driver_id"/>
+                                </div>
+                            </div>
+                        </t>
+                    </templates>
+                </kanban>
+            </field>
+        </record>
+
+        <!-- ============================================================
+             CALENDAR VIEW
+        ============================================================= -->
+        <record id="view_transit_trip_calendar" model="ir.ui.view">
+            <field name="name">transit.trip.calendar</field>
+            <field name="model">transit.trip</field>
+            <field name="arch" type="xml">
+                <calendar string="Trips" date_start="trip_date" color="status" mode="month" quick_add="False">
+                    <field name="name"/>
+                    <field name="vehicle_id"/>
+                    <field name="driver_id"/>
+                    <field name="status"/>
+                </calendar>
+            </field>
+        </record>
+
+        <!-- ============================================================
+             SEARCH VIEW
+        ============================================================= -->
+        <record id="view_transit_trip_search" model="ir.ui.view">
+            <field name="name">transit.trip.search</field>
+            <field name="model">transit.trip</field>
+            <field name="arch" type="xml">
+                <search string="Search Trips">
+                    <field name="name" string="Trip"
+                           filter_domain="['|', '|', ('name', 'ilike', self), ('pickup_location', 'ilike', self), ('destination', 'ilike', self)]"/>
+                    <field name="vehicle_id"/>
+                    <field name="driver_id"/>
+                    <field name="trip_date"/>
+                    <filter string="Draft" name="filter_draft" domain="[('status', '=', 'draft')]"/>
+                    <filter string="Assigned" name="filter_assigned" domain="[('status', '=', 'assigned')]"/>
+                    <filter string="In Transit" name="filter_in_transit" domain="[('status', '=', 'in_transit')]"/>
+                    <filter string="Completed" name="filter_completed" domain="[('status', '=', 'completed')]"/>
+                    <filter string="Cancelled" name="filter_cancelled" domain="[('status', '=', 'cancelled')]"/>
+                    <separator/>
+                    <filter string="Today" name="filter_today"
+                            domain="[('trip_date', '=', context_today().strftime('%Y-%m-%d'))]"/>
+                    <filter string="High Priority" name="filter_high_priority" domain="[('priority', 'in', ('2', '3'))]"/>
+                    <group expand="0" string="Group By">
+                        <filter string="Status" name="group_status" context="{'group_by': 'status'}"/>
+                        <filter string="Vehicle" name="group_vehicle" context="{'group_by': 'vehicle_id'}"/>
+                        <filter string="Driver" name="group_driver" context="{'group_by': 'driver_id'}"/>
+                        <filter string="Trip Date" name="group_date" context="{'group_by': 'trip_date'}"/>
+                        <filter string="Priority" name="group_priority" context="{'group_by': 'priority'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <!-- ============================================================
+             ACTION
+        ============================================================= -->
+        <record id="action_transit_trip" model="ir.actions.act_window">
+            <field name="name">Trips</field>
+            <field name="res_model">transit.trip</field>
+            <field name="view_mode">kanban,list,form,calendar</field>
+            <field name="search_view_id" ref="view_transit_trip_search"/>
+            <field name="context">{'search_default_filter_today': 0}</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Dispatch your first trip
+                </p>
+                <p>
+                    Plan routes, assign vehicles and drivers, and track trips from draft to completion.
+                </p>
+            </field>
+        </record>
+
+        <!-- ============================================================
+             MENU
+        ============================================================= -->
+        <menuitem id="menu_transit_trip"
+                  name="Trip Dispatch"
+                  parent="menu_transit_operations"
+                  action="action_transit_trip"
+                  sequence="10"/>
+
+    </data>
+</odoo>
