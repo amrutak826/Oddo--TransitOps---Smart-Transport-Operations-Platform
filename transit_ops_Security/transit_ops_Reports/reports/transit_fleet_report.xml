@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="action_report_transit_fleet" model="ir.actions.report">
+        <field name="name">Fleet Report</field>
+        <field name="model">transit.vehicle</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">transit_ops.report_transit_fleet_document</field>
+        <field name="report_file">transit_ops.report_transit_fleet_document</field>
+        <field name="print_report_name">'Fleet Report - %s' % (object.name)</field>
+        <field name="binding_model_id" ref="model_transit_vehicle"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <template id="report_transit_fleet_document">
+        <t t-call="web.html_container">
+            <t t-call="web.external_layout">
+                <div class="transit_report_wrap page">
+                    <t t-call="transit_ops.report_transit_styles"/>
+                    <t t-call="transit_ops.report_transit_banner">
+                        <t t-set="title">Fleet Report</t>
+                        <t t-set="subtitle">Vehicle registry, compliance and cost overview</t>
+                    </t>
+
+                    <table class="transit_report_table">
+                        <thead>
+                            <tr>
+                                <th>Fleet Code</th>
+                                <th>Reg. No.</th>
+                                <th>Type</th>
+                                <th>Make / Model</th>
+                                <th>Driver</th>
+                                <th>Odometer</th>
+                                <th>Documents</th>
+                                <th>Status</th>
+                                <th>Fuel Cost</th>
+                                <th>Maint. Cost</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr t-foreach="docs" t-as="vehicle">
+                                <td><t t-esc="vehicle.sequence_code"/></td>
+                                <td><t t-esc="vehicle.name"/></td>
+                                <td><t t-esc="dict(vehicle._fields['vehicle_type'].selection).get(vehicle.vehicle_type, '')"/></td>
+                                <td><t t-esc="(vehicle.make or '') + ' ' + (vehicle.model or '')"/></td>
+                                <td><t t-esc="vehicle.driver_id.name or '-'"/></td>
+                                <td><t t-esc="'%.0f km' % vehicle.odometer"/></td>
+                                <td>
+                                    <span t-attf-class="transit_badge {{ 'transit_badge_success' if vehicle.document_status == 'valid' else ('transit_badge_warning' if vehicle.document_status == 'expiring_soon' else 'transit_badge_danger') }}">
+                                        <t t-esc="dict(vehicle._fields['document_status'].selection).get(vehicle.document_status, '')"/>
+                                    </span>
+                                </td>
+                                <td>
+                                    <span t-attf-class="transit_badge {{ 'transit_badge_success' if vehicle.state == 'available' else ('transit_badge_info' if vehicle.state == 'on_trip' else ('transit_badge_warning' if vehicle.state == 'maintenance' else '')) }}">
+                                        <t t-esc="dict(vehicle._fields['state'].selection).get(vehicle.state, '')"/>
+                                    </span>
+                                </td>
+                                <td><t t-esc="'%.2f' % vehicle.total_fuel_cost"/></td>
+                                <td><t t-esc="'%.2f' % vehicle.total_maintenance_cost"/></td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="transit_report_summary">
+                        Total Vehicles: <strong><t t-esc="len(docs)"/></strong>
+                        &#160;|&#160; Available: <strong><t t-esc="len(docs.filtered(lambda v: v.state == 'available'))"/></strong>
+                        &#160;|&#160; Total Fuel Cost: <strong><t t-esc="'%.2f' % sum(docs.mapped('total_fuel_cost'))"/></strong>
+                        &#160;|&#160; Total Maintenance Cost: <strong><t t-esc="'%.2f' % sum(docs.mapped('total_maintenance_cost'))"/></strong>
+                    </div>
+                </div>
+            </t>
+        </t>
+    </template>
+
+</odoo>
