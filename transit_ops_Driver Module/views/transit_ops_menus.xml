@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- ================================================================
+             ROOT APP MENU
+             This is the top-level app icon shown on the Odoo home screen.
+        ================================================================= -->
+        <menuitem id="menu_transit_ops_root"
+                  name="TransitOps"
+                  sequence="10"
+                  web_icon="transit_ops,static/description/icon.png"/>
+
+        <!-- ================================================================
+             SECOND-LEVEL SECTION MENUS
+             Each corresponds to one functional area of the platform.
+             Leaf items with window actions are added alongside each area's
+             models/views as they are implemented.
+        ================================================================= -->
+
+        <menuitem id="menu_transit_dashboard_root"
+                  name="Dashboard"
+                  parent="menu_transit_ops_root"
+                  sequence="10"/>
+
+        <menuitem id="menu_transit_vehicle_root"
+                  name="Vehicle Registry"
+                  parent="menu_transit_ops_root"
+                  groups="transit_ops.group_transit_dispatcher"
+                  sequence="20"/>
+
+        <menuitem id="menu_transit_driver_root"
+                  name="Driver Management"
+                  parent="menu_transit_ops_root"
+                  groups="transit_ops.group_transit_dispatcher"
+                  sequence="30"/>
+
+        <menuitem id="menu_transit_dispatch_root"
+                  name="Trip Dispatch"
+                  parent="menu_transit_ops_root"
+                  sequence="40"/>
+
+        <menuitem id="menu_transit_maintenance_root"
+                  name="Maintenance"
+                  parent="menu_transit_ops_root"
+                  groups="transit_ops.group_transit_mechanic"
+                  sequence="50"/>
+
+        <menuitem id="menu_transit_expense_root"
+                  name="Fuel &amp; Expense"
+                  parent="menu_transit_ops_root"
+                  sequence="60"/>
+
+        <menuitem id="menu_transit_reports_root"
+                  name="Reports"
+                  parent="menu_transit_ops_root"
+                  groups="transit_ops.group_transit_dispatcher"
+                  sequence="70"/>
+
+        <menuitem id="menu_transit_notifications_root"
+                  name="Notifications"
+                  parent="menu_transit_ops_root"
+                  sequence="80"/>
+
+        <menuitem id="menu_transit_config_root"
+                  name="Configuration"
+                  parent="menu_transit_ops_root"
+                  groups="transit_ops.group_transit_manager"
+                  sequence="90"/>
+
+        <!-- Configuration > User Roles
+             Functional today: filters res.groups to the TransitOps category
+             so Managers can see/manage who holds each role. -->
+        <record id="action_transit_ops_groups" model="ir.actions.act_window">
+            <field name="name">User Roles</field>
+            <field name="res_model">res.groups</field>
+            <field name="view_mode">list,form</field>
+            <field name="domain">[('category_id', '=', ref('module_category_transit_ops'))]</field>
+            <field name="context">{'default_category_id': ref('module_category_transit_ops')}</field>
+        </record>
+
+        <menuitem id="menu_transit_config_roles"
+                  name="User Roles"
+                  parent="menu_transit_config_root"
+                  action="action_transit_ops_groups"
+                  groups="transit_ops.group_transit_manager"
+                  sequence="10"/>
+
+    </data>
+</odoo>

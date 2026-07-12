@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+
+        <!-- ================================================================
+             MODULE CATEGORY
+        ================================================================= -->
+        <record id="module_category_transit_ops" model="ir.module.category">
+            <field name="name">TransitOps</field>
+            <field name="description">Access rights for the TransitOps Smart Transport Operations Platform</field>
+            <field name="sequence">15</field>
+        </record>
+
+        <!-- ================================================================
+             ROLE-BASED SECURITY GROUPS
+             Hierarchy:
+               Driver         -> base operational role, restricted to own records
+               Mechanic       -> maintenance operations
+               Dispatcher     -> implies Driver + Mechanic (visibility) and adds
+                                  trip/vehicle/driver management
+               Manager        -> implies Dispatcher, full configuration & admin
+        ================================================================= -->
+
+        <record id="group_transit_driver" model="res.groups">
+            <field name="name">Driver</field>
+            <field name="category_id" ref="module_category_transit_ops"/>
+            <field name="comment">Drivers can view their own assigned trips and vehicle,
+                log fuel &amp; expense entries, and update trip status while on duty.</field>
+        </record>
+
+        <record id="group_transit_mechanic" model="res.groups">
+            <field name="name">Mechanic</field>
+            <field name="category_id" ref="module_category_transit_ops"/>
+            <field name="comment">Mechanics manage maintenance requests, service records
+                and update vehicle service status.</field>
+        </record>
+
+        <record id="group_transit_dispatcher" model="res.groups">
+            <field name="name">Dispatcher</field>
+            <field name="category_id" ref="module_category_transit_ops"/>
+            <field name="implied_ids" eval="[(4, ref('group_transit_driver')), (4, ref('group_transit_mechanic'))]"/>
+            <field name="comment">Dispatchers create and manage trips, assign vehicles
+                and drivers, and monitor day-to-day fleet operations.</field>
+        </record>
+
+        <record id="group_transit_manager" model="res.groups">
+            <field name="name">Manager</field>
+            <field name="category_id" ref="module_category_transit_ops"/>
+            <field name="implied_ids" eval="[(4, ref('group_transit_dispatcher'))]"/>
+            <field name="comment">Managers have full access to all TransitOps data,
+                configuration, security settings and reports.</field>
+            <field name="users" eval="[(4, ref('base.user_admin'))]"/>
+        </record>
+
+        <!-- ================================================================
+             MULTI-COMPANY RULE TEMPLATE
+             Concrete per-model rules (e.g. "Driver sees only own trips") are
+             defined alongside each model's security file as that model is
+             introduced, so the rule can reference real fields safely.
+        ================================================================= -->
+
+    </data>
+</odoo>

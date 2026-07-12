@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- ================================================================
+             LIST VIEW
+        ================================================================= -->
+        <record id="view_transit_driver_list" model="ir.ui.view">
+            <field name="name">transit.driver.list</field>
+            <field name="model">transit.driver</field>
+            <field name="arch" type="xml">
+                <list string="Drivers"
+                      decoration-danger="status == 'license_expired'"
+                      decoration-info="status == 'assigned'"
+                      decoration-muted="status == 'inactive'">
+                    <field name="code"/>
+                    <field name="name"/>
+                    <field name="phone"/>
+                    <field name="email"/>
+                    <field name="license_number"/>
+                    <field name="license_expiry"/>
+                    <field name="experience_years"/>
+                    <field name="safety_score" widget="progressbar"/>
+                    <field name="assigned_vehicle_id"/>
+                    <field name="status" widget="badge"
+                           decoration-success="status == 'available'"
+                           decoration-info="status == 'assigned'"
+                           decoration-danger="status == 'license_expired'"
+                           decoration-muted="status == 'inactive'"/>
+                </list>
+            </field>
+        </record>
+
+        <!-- ================================================================
+             FORM VIEW
+        ================================================================= -->
+        <record id="view_transit_driver_form" model="ir.ui.view">
+            <field name="name">transit.driver.form</field>
+            <field name="model">transit.driver</field>
+            <field name="arch" type="xml">
+                <form string="Driver">
+                    <header>
+                        <button name="action_archive_driver" type="object"
+                                string="Archive Driver" class="btn-secondary"
+                                confirm="Are you sure you want to take this driver out of service?"
+                                invisible="not active"/>
+                        <field name="status" widget="statusbar"
+                               statusbar_visible="available,assigned,license_expired,inactive"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_button_box" name="button_box">
+                            <button name="action_view_assigned_vehicle" type="object"
+                                    class="oe_stat_button" icon="fa-truck"
+                                    invisible="not assigned_vehicle_id">
+                                <div class="o_stat_info">
+                                    <span class="o_stat_text">Assigned</span>
+                                    <span class="o_stat_text">Vehicle</span>
+                                </div>
+                            </button>
+                        </div>
+
+                        <field name="image_1920" widget="image" class="oe_avatar"
+                               options="{'preview_image': 'image_128'}"/>
+
+                        <div class="oe_title">
+                            <label for="name"/>
+                            <h1>
+                                <field name="name" placeholder="Driver's full name"/>
+                            </h1>
+                            <h3>
+                                <field name="code" readonly="1"/>
+                            </h3>
+                        </div>
+
+                        <group>
+                            <group string="Contact">
+                                <field name="phone"/>
+                                <field name="email"/>
+                                <field name="address"/>
+                            </group>
+                            <group string="License &amp; Employment">
+                                <field name="license_number"/>
+                                <field name="license_expiry"/>
+                                <field name="joining_date"/>
+                                <field name="experience_years"/>
+                            </group>
+                        </group>
+
+                        <group>
+                            <group string="Performance">
+                                <field name="safety_score" widget="progressbar" readonly="1"/>
+                            </group>
+                            <group string="Assignment">
+                                <field name="assigned_vehicle_id"/>
+                                <field name="company_id" groups="base.group_multi_company"/>
+                                <field name="user_id"/>
+                                <field name="active" invisible="1"/>
+                            </group>
+                        </group>
+
+                        <notebook>
+                            <page string="Vehicle History" name="vehicle_history">
+                                <field name="vehicle_ids" readonly="1">
+                                    <list>
+                                        <field name="vehicle_number"/>
+                                        <field name="vehicle_type"/>
+                                        <field name="status"/>
+                                    </list>
+                                </field>
+                            </page>
+                            <page string="Notes" name="notes">
+                                <field name="notes" placeholder="Internal notes about this driver..."/>
+                            </page>
+                        </notebook>
+                    </sheet>
+                    <chatter/>
+                </form>
+            </field>
+        </record>
+
+        <!-- ================================================================
+             SEARCH VIEW
+        ================================================================= -->
+        <record id="view_transit_driver_search" model="ir.ui.view">
+            <field name="name">transit.driver.search</field>
+            <field name="model">transit.driver</field>
+            <field name="arch" type="xml">
+                <search string="Search Drivers">
+                    <field name="name" string="Driver"
+                           filter_domain="['|', '|', ('name', 'ilike', self),
+                                          ('code', 'ilike', self), ('license_number', 'ilike', self)]"/>
+                    <field name="phone"/>
+                    <field name="email"/>
+                    <field name="license_number"/>
+                    <field name="assigned_vehicle_id"/>
+                    <separator/>
+                    <filter string="Available" name="filter_available"
+                            domain="[('status', '=', 'available')]"/>
+                    <filter string="Assigned" name="filter_assigned"
+                            domain="[('status', '=', 'assigned')]"/>
+                    <filter string="License Expired" name="filter_license_expired"
+                            domain="[('status', '=', 'license_expired')]"/>
+                    <filter string="Inactive" name="filter_inactive"
+                            domain="[('status', '=', 'inactive')]"/>
+                    <separator/>
+                    <filter string="Archived" name="filter_archived"
+                            domain="[('active', '=', False)]"/>
+                    <separator/>
+                    <filter string="License Expiring (30 days)" name="filter_license_soon"
+                            domain="[('license_expiry', '&lt;=', (context_today() + relativedelta(days=30)).strftime('%Y-%m-%d'))]"/>
+                    <filter string="Low Safety Score (&lt; 60)" name="filter_low_safety"
+                            domain="[('safety_score', '&lt;', 60)]"/>
+                    <group expand="0" string="Group By">
+                        <filter string="Status" name="group_status" context="{'group_by': 'status'}"/>
+                        <filter string="Assigned Vehicle" name="group_vehicle" context="{'group_by': 'assigned_vehicle_id'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <!-- ================================================================
+             WINDOW ACTION
+        ================================================================= -->
+        <record id="action_transit_driver" model="ir.actions.act_window">
+            <field name="name">Drivers</field>
+            <field name="res_model">transit.driver</field>
+            <field name="view_mode">list,form</field>
+            <field name="search_view_id" ref="view_transit_driver_search"/>
+            <field name="context">{'search_default_filter_available': 0}</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smart_action">
+                    Register your first driver
+                </p>
+                <p>
+                    Track license validity, contact details, experience, an
+                    automatically calculated safety score, and current vehicle
+                    assignment for every driver on your team.
+                </p>
+            </field>
+        </record>
+
+        <!-- ================================================================
+             MENU (child of the "Driver Management" parent menu created in
+             the base scaffold — that file is not modified here)
+        ================================================================= -->
+        <menuitem id="menu_transit_driver_list"
+                  name="Drivers"
+                  parent="transit_ops.menu_transit_driver_root"
+                  action="action_transit_driver"
+                  groups="transit_ops.group_transit_dispatcher"
+                  sequence="10"/>
+
+    </data>
+</odoo>
